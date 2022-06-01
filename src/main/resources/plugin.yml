@@ -1,0 +1,6 @@
+name: TopTime
+version: '${project.version}'
+main: me.roopekoo.toptime.TopTime
+api-version: 1.18
+authors: [ Roopekoo ]
+description: Displays playtime toplist
