@@ -1,6 +1,13 @@
-name: TopTime
+name: TimeTracker
 version: '${project.version}'
-main: me.roopekoo.toptime.TopTime
+main: me.roopekoo.toptime.TimeTracker
 api-version: 1.18
 authors: [ Roopekoo ]
 description: Displays playtime toplist
+commands:
+  gettime:
+    description: 'Show player playtime'
+    usage: /<command> [playerName] <y | mo | d | h | m | s | ms | t>
+  toptime:
+    description: 'List players based on playtime'
+    usage: /<command> [page] <y | mo | d | h | m | s | ms | t>
