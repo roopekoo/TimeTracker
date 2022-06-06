@@ -13,6 +13,11 @@ public class gettime implements CommandExecutor {
 	TimeConverter converter = new TimeConverter();
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission("timetracker.gettime"))
+		{
+			sender.sendMessage("You do not have permission to do that");
+			return true;
+		}
 		if(args.length>2) {
 			sender.sendMessage("Too many arguments!");
 			return false;

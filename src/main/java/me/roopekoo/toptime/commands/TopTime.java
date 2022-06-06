@@ -10,8 +10,14 @@ import org.bukkit.command.CommandSender;
 
 public class TopTime implements CommandExecutor {
 	TimeConverter converter = new TimeConverter();
+	PlayerData playerData = TimeTracker.getPlugin().getPlayerData();
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission("timetracker.toptime"))
+		{
+			sender.sendMessage("You do not have permission to do that");
+			return true;
+		}
 		if(args.length>2) {
 			sender.sendMessage("Too many arguments!");
 			return false;
@@ -32,6 +38,17 @@ public class TopTime implements CommandExecutor {
 			return false;
 		}
 		if(args.length == 1) {
+			if(args[0].equalsIgnoreCase("force"))
+			{
+				if(!sender.hasPermission("timetracker.toptime.force"))
+				{
+					sender.sendMessage("You do not have permission to do that");
+					return true;
+				}
+				playerData.sortTimes();
+				sender.sendMessage("Playtime toplist has been force updated");
+				return true;
+			}
 			//check if arg 1 is valid number
 			if(isPositiveInteger(args[0])) {
 				converter.printTopList(sender, args[0], "");
