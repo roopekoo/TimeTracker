@@ -17,7 +17,8 @@ public class onPlayerLogin implements Listener {
 		Player p = e.getPlayer();
 		UUID uuid = p.getUniqueId();
 		if(!p.hasPlayedBefore()) {
-			playerData.addNewPlayer(uuid, p.getName(), 0);
+			playerData.addNewPlayer(uuid, p.getName(), 0, true);
+			playerData.sortTimes();
 		} else {
 			playerData.setOnline(uuid, true);
 		}

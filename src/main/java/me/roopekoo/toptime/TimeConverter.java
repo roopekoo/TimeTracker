@@ -1,9 +1,8 @@
 package me.roopekoo.toptime;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import org.bukkit.command.CommandSender;
+
+import java.util.*;
 
 public class TimeConverter {
 	private static final HashMap<String, TicksToUnit> TimeFormats;
@@ -77,13 +76,7 @@ public class TimeConverter {
 			ticks = (long) (ticks-value*TicksToUnit.MINUTE.value);
 		}
 		if(ticks/TicksToUnit.SECOND.value>1) {
-			value = (int) (ticks/TicksToUnit.SECOND.value);
-			s = s+value+"s";
-			ticks = (long) (ticks-value*TicksToUnit.SECOND.value);
-		}
-		if(ticks != 0) {
-			value = (int) (ticks/TicksToUnit.MILLISECOND.value);
-			s = s+value+"ms";
+			s = s+ticks/TicksToUnit.SECOND.value+"s";
 		}
 		return s;
 	}
@@ -108,6 +101,47 @@ public class TimeConverter {
 		}
 		String formattedTime = String.format("%.2f", playtime/unit);
 		return formattedTime+format;
+	}
+
+	public void printTopList(CommandSender sender, String pageNo, String timeFormat) {
+		//check that pageNo is not too big
+		int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);
+		int page;
+		if(pageNo.equals("")) {
+			page = 1;
+		} else {
+			page = Integer.parseInt(pageNo);
+		}
+		if(page>pages) {
+			sender.sendMessage("That page does not exist!");
+		} else {
+			String username;
+			String playtime;
+			int ticks;
+			int userIndex = (page-1)*10+1;
+			//Check if list needs refreshing
+			if(playerData.isTopListOld()) {
+				sender.sendMessage("Updating top list... Please wait!");
+				playerData.sortTimes();
+			}
+			sender.sendMessage("Playtime toplist -- Page "+page+"/"+pages+":");
+			//Get correct slice of toplist
+			List<PlayerData.User> topListPage = playerData.getTopListPage(page);
+			for(PlayerData.User user: topListPage) {
+				username = user.name;
+				ticks = user.playTimeTicks;
+				if(timeFormat.equals("")) {
+					playtime = fullTimeToStr(ticks);
+				} else {
+					playtime = formatPlaytime(ticks, timeFormat);
+				}
+				sender.sendMessage(userIndex+". "+username+": "+playtime);
+				userIndex++;
+			}
+			if(page != pages) {
+				sender.sendMessage("Proceed to the next page with /toptime "+page+1);
+			}
+		}
 	}
 
 	private enum TicksToUnit {
