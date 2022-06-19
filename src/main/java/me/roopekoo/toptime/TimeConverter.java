@@ -106,6 +106,7 @@ public class TimeConverter {
 	public void printTopList(CommandSender sender, String pageNo, String timeFormat) {
 		//check that pageNo is not too big
 		int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);
+		String pageStr = String.valueOf(pages);
 		int page;
 		if(pageNo.equals("")) {
 			page = 1;
@@ -113,33 +114,45 @@ public class TimeConverter {
 			page = Integer.parseInt(pageNo);
 		}
 		if(page>pages) {
-			sender.sendMessage("That page does not exist!");
+			sender.sendMessage(Messages.TITLE+Messages.INVALID_PAGE.toString());
 		} else {
 			String username;
 			String playtime;
-			int ticks;
+			String index;
+			Messages isOnline;
+			long ticks;
 			int userIndex = (page-1)*10+1;
 			//Check if list needs refreshing
 			if(playerData.isTopListOld()) {
-				sender.sendMessage("Updating top list... Please wait!");
+				sender.sendMessage(Messages.TITLE+Messages.LIST_UPDATE.toString());
 				playerData.sortTimes();
 			}
-			sender.sendMessage("Playtime toplist -- Page "+page+"/"+pages+":");
+			pageNo = String.valueOf(page);
+			sender.sendMessage(
+					Messages.TITLE+Messages.TOPLIST_TITLE.toString().replace("{0}", pageNo).replace("{1}", pageStr));
 			//Get correct slice of toplist
 			List<PlayerData.User> topListPage = playerData.getTopListPage(page);
 			for(PlayerData.User user: topListPage) {
+				isOnline = Messages.OFFLINE;
 				username = user.name;
-				ticks = user.playTimeTicks;
+				ticks = playerData.getPlaytime(username);
 				if(timeFormat.equals("")) {
 					playtime = fullTimeToStr(ticks);
 				} else {
 					playtime = formatPlaytime(ticks, timeFormat);
 				}
-				sender.sendMessage(userIndex+". "+username+": "+playtime);
+				if(user.isOnline) {
+					isOnline = Messages.ONLINE;
+				}
+				index = String.valueOf(userIndex);
+				sender.sendMessage(
+						Messages.TOPLIST_MAIN.toString().replace("{0}", index).replace("{1}", isOnline.toString())
+						                     .replace("{2}", username).replace("{3}", playtime));
 				userIndex++;
 			}
 			if(page != pages) {
-				sender.sendMessage("Proceed to the next page with /toptime "+page+1);
+				pageNo = String.valueOf(page+1);
+				sender.sendMessage(Messages.TOPLIST_FOOTER.toString().replace("{0}", pageNo));
 			}
 		}
 	}

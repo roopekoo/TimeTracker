@@ -1,5 +1,6 @@
 package me.roopekoo.toptime.commands;
 
+import me.roopekoo.toptime.Messages;
 import me.roopekoo.toptime.PlayerData;
 import me.roopekoo.toptime.TimeConverter;
 import me.roopekoo.toptime.TimeTracker;
@@ -13,13 +14,12 @@ public class gettime implements CommandExecutor {
 	TimeConverter converter = new TimeConverter();
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission("timetracker.gettime"))
-		{
-			sender.sendMessage("You do not have permission to do that");
+		if(!sender.hasPermission("timetracker.gettime")) {
+			sender.sendMessage(Messages.TITLE+Messages.NO_PERM.toString());
 			return true;
 		}
 		if(args.length>2) {
-			sender.sendMessage("Too many arguments!");
+			sender.sendMessage(Messages.TITLE+Messages.TOO_MANY_PARAMS.toString());
 			return false;
 		}
 		if(args.length == 2) {
@@ -30,7 +30,8 @@ public class gettime implements CommandExecutor {
 					printPlaytime(sender, args[0], args[1]);
 					return true;
 				} else {
-					sender.sendMessage("Invalid time format!");
+					sender.sendMessage(Messages.TITLE+Messages.INVALID_TIME_FORMAT.toString());
+					return false;
 				}
 			}
 			//check if username is valid, arg1
@@ -40,10 +41,10 @@ public class gettime implements CommandExecutor {
 					printPlaytime(sender, args[0], args[1]);
 					return true;
 				} else {
-					sender.sendMessage("Invalid time format!");
+					sender.sendMessage(Messages.TITLE+Messages.INVALID_TIME_FORMAT.toString());
 				}
 			} else {
-				sender.sendMessage("Invalid username!");
+				sender.sendMessage(Messages.TITLE+Messages.INVALID_USERNAME.toString());
 			}
 			return false;
 		}
@@ -61,17 +62,17 @@ public class gettime implements CommandExecutor {
 			//check if arg 1 is valid timeFormat string
 			if(converter.isTimeFormat(args[0])) {
 				if(!(sender instanceof Player)) {
-					sender.sendMessage("Playername required!");
+					sender.sendMessage(Messages.TITLE+Messages.PLAYER_REQUIRED.toString());
 					return false;
 				}
 				printPlaytime(sender, sender.getName(), args[0]);
 				return true;
 			}
-			sender.sendMessage("Invalid parameter!");
+			sender.sendMessage(Messages.TITLE+Messages.INVALID_PARAM.toString());
 			return false;
 		}
 		if(!(sender instanceof Player)) {
-			sender.sendMessage("Playername required!");
+			sender.sendMessage(Messages.TITLE+Messages.PLAYER_REQUIRED.toString());
 			return false;
 		}
 		printPlaytime(sender, sender.getName(), "");
@@ -81,9 +82,18 @@ public class gettime implements CommandExecutor {
 	private void printPlaytime(CommandSender sender, String username, String timeFormat) {
 		String playtime = converter.getPlaytime(username, timeFormat);
 		if(username.equalsIgnoreCase("total")) {
-			sender.sendMessage("All players combined have a playtime of "+playtime);
+			sender.sendMessage(Messages.TITLE+Messages.GETTIME_TOTAL.toString().replace("{0}", playtime));
 		} else {
-			sender.sendMessage(username+" has a playtime of "+playtime);
+			if(sender.getName().equalsIgnoreCase(username)) {
+				sender.sendMessage(Messages.TITLE+Messages.GETTIME_SELF.toString().replace("{0}", playtime));
+			} else {
+				Messages isOnline = Messages.OFFLINE;
+				if(playerData.isOnline(username)) {
+					isOnline = Messages.ONLINE;
+				}
+				sender.sendMessage(Messages.TITLE+Messages.GETTIME.toString().replace("{0}", isOnline.toString())
+				                                                  .replace("{1}", username).replace("{2}", playtime));
+			}
 		}
 	}
 }

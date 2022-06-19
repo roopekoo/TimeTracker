@@ -1,5 +1,6 @@
 package me.roopekoo.toptime.commands;
 
+import me.roopekoo.toptime.Messages;
 import me.roopekoo.toptime.PlayerData;
 import me.roopekoo.toptime.TimeConverter;
 import me.roopekoo.toptime.TimeTracker;
@@ -13,13 +14,12 @@ public class TopTime implements CommandExecutor {
 	PlayerData playerData = TimeTracker.getPlugin().getPlayerData();
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission("timetracker.toptime"))
-		{
-			sender.sendMessage("You do not have permission to do that");
+		if(!sender.hasPermission("timetracker.toptime")) {
+			sender.sendMessage(Messages.TITLE+Messages.NO_PERM.toString());
 			return true;
 		}
 		if(args.length>2) {
-			sender.sendMessage("Too many arguments!");
+			sender.sendMessage(Messages.TITLE+Messages.TOO_MANY_PARAMS.toString());
 			return false;
 		}
 		if(args.length == 2) {
@@ -30,23 +30,21 @@ public class TopTime implements CommandExecutor {
 					converter.printTopList(sender, args[0], args[1]);
 					return true;
 				} else {
-					sender.sendMessage("Invalid time format!");
+					sender.sendMessage(Messages.TITLE+Messages.INVALID_TIME_FORMAT.toString());
 				}
 			} else {
-				sender.sendMessage("Invalid page number!");
+				sender.sendMessage(Messages.TITLE+Messages.INVALID_PAGE_NO.toString());
 			}
 			return false;
 		}
 		if(args.length == 1) {
-			if(args[0].equalsIgnoreCase("force"))
-			{
-				if(!sender.hasPermission("timetracker.toptime.force"))
-				{
-					sender.sendMessage("You do not have permission to do that");
+			if(args[0].equalsIgnoreCase("force")) {
+				if(!sender.hasPermission("timetracker.toptime.force")) {
+					sender.sendMessage(Messages.TITLE+Messages.NO_PERM.toString());
 					return true;
 				}
 				playerData.sortTimes();
-				sender.sendMessage("Playtime toplist has been force updated");
+				sender.sendMessage(Messages.TITLE+Messages.FORCE_UPDATED.toString());
 				return true;
 			}
 			//check if arg 1 is valid number
@@ -59,7 +57,7 @@ public class TopTime implements CommandExecutor {
 				converter.printTopList(sender, "", args[0]);
 				return true;
 			}
-			sender.sendMessage("Invalid parameter!");
+			sender.sendMessage(Messages.TITLE+Messages.INVALID_PARAM.toString());
 			return false;
 		}
 		converter.printTopList(sender, "", "");
