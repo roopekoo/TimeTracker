@@ -99,8 +99,10 @@ public class TimeConverter {
 		if(longUnit2Short.containsKey(timeFormat)) {
 			format = longUnit2Short.get(timeFormat);
 		}
-		String formattedTime = String.format("%.2f", playtime/unit);
-		return formattedTime+format;
+		if(format.equals("ms") || format.equals("t")) {
+			return String.format("%,.0f", playtime/unit)+format;
+		}
+		return String.format("%,.2f", playtime/unit)+format;
 	}
 
 	public void printTopList(CommandSender sender, String pageNo, String timeFormat) {
