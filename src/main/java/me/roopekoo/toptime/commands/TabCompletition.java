@@ -1,5 +1,6 @@
 package me.roopekoo.toptime.commands;
 
+import me.roopekoo.toptime.PlayerData;
 import me.roopekoo.toptime.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -20,6 +21,19 @@ public class TabCompletition implements TabCompleter {
 				list.add("total");
 				for(Player p: Bukkit.getOnlinePlayers()) {
 					list.add(p.getName());
+				}
+				return list;
+			}
+			if(args.length == 2) {
+				return converter.getTimeFormatsArray();
+			}
+		}
+		if(command.getName().equalsIgnoreCase("toptime")) {
+			if(args.length == 1) {
+				List<String> list = new ArrayList<>();
+				int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);
+				for(int i = 0; i<pages; i++) {
+					list.add(String.valueOf(i+1));
 				}
 				return list;
 			}
