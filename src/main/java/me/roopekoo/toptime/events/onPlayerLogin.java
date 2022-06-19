@@ -25,6 +25,8 @@ public class onPlayerLogin implements Listener {
 	}
 
 	@EventHandler public void onLeave(PlayerQuitEvent e) {
-		playerData.setOnline(e.getPlayer().getUniqueId(), false);
+		UUID uuid = e.getPlayer().getUniqueId();
+		playerData.setOnline(uuid, false);
+		playerData.updatePlaytime(uuid);
 	}
 }

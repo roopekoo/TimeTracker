@@ -40,7 +40,21 @@ public class PlayerData {
 	}
 
 	public void sortTimes() {
+		User user;
+		UUID uuid;
 		updateTime = System.currentTimeMillis();
+		totalTime = 0;
+		// Update array to most recent playerData
+		for(User topTime: topTimes) {
+			user = topTime;
+			uuid = user.uuid;
+			//Playtime is old
+			if(user.isOnline) {
+				updatePlaytime(uuid);
+			}
+			totalTime += user.playTimeTicks;
+		}
+		//sort toplist
 		topTimes.sort(new compTimes());
 	}
 
@@ -65,7 +79,7 @@ public class PlayerData {
 		UUID uuid = name2uuid.get(username.toLowerCase());
 		User user = playerMap.get(uuid.toString());
 		if(user.isOnline) {
-			int ticks = Objects.requireNonNull(Bukkit.getPlayer(user.uuid)).getStatistic(Statistic.PLAY_ONE_MINUTE);
+			int ticks = Bukkit.getOfflinePlayer(user.uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
 			user.playTimeTicks = ticks;
 			return ticks;
 		}
@@ -92,6 +106,17 @@ public class PlayerData {
 		return System.currentTimeMillis()-updateTime>UPDATEDELAY;
 	}
 
+	public boolean isOnline(String username) {
+		UUID uuid = name2uuid.get(username.toLowerCase());
+		User user = playerMap.get(uuid.toString());
+		return user.isOnline;
+	}
+
+	public void updatePlaytime(UUID uuid) {
+		playerMap.get(uuid.toString()).playTimeTicks =
+				Bukkit.getOfflinePlayer(uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
+	}
+
 	static class compTimes implements Comparator<User> {
 		@Override public int compare(User o1, User o2) {
 			return Integer.compare(o2.playTimeTicks, o1.playTimeTicks);
@@ -102,7 +127,7 @@ public class PlayerData {
 		private final UUID uuid;
 		String name;
 		int playTimeTicks;
-		private boolean isOnline;
+		boolean isOnline;
 
 		public User(UUID uuid, String name, int playTimeTicks, boolean isOnline) {
 			this.uuid = uuid;
