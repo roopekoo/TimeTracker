@@ -32,8 +32,9 @@ public class PlayerData {
 			String name = offlinePlayer.getName();
 			playTime = offlinePlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
 
-			assert name != null;
-			addNewPlayer(uuid, name, playTime, false);
+			if(name != null) {
+				addNewPlayer(uuid, name, playTime, false);
+			}
 
 		}
 		sortTimes();
