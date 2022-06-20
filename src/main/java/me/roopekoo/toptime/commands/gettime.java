@@ -38,7 +38,8 @@ public class gettime implements CommandExecutor {
 			if(playerData.isUserValid(args[0])) {
 				//Check if timeformat is correct
 				if(converter.isTimeFormat(args[1])) {
-					printPlaytime(sender, args[0], args[1]);
+					String user = playerData.getNameFormat(args[0]);
+					printPlaytime(sender, user, args[1]);
 					return true;
 				} else {
 					sender.sendMessage(Messages.TITLE+Messages.INVALID_TIME_FORMAT.toString());
