@@ -74,6 +74,9 @@ public class PlayerData {
 
 	public long getPlaytime(String username) {
 		if(username.equalsIgnoreCase("total")) {
+			if(isTopListOld()) {
+				sortTimes();
+			}
 			return totalTime;
 		}
 		UUID uuid = name2uuid.get(username.toLowerCase());
@@ -115,6 +118,11 @@ public class PlayerData {
 	public void updatePlaytime(UUID uuid) {
 		playerMap.get(uuid.toString()).playTimeTicks =
 				Bukkit.getOfflinePlayer(uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
+	}
+
+	public String getNameFormat(String arg) {
+		UUID uuid = name2uuid.get(arg.toLowerCase());
+		return playerMap.get(uuid.toString()).name;
 	}
 
 	static class compTimes implements Comparator<User> {
