@@ -1,4 +1,4 @@
-package me.roopekoo.toptime;
+package me.roopekoo.timeTracker;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +18,6 @@ public class PlayerData {
 	private static final HashMap<String, User> playerMap = new HashMap<>();
 	//Main toplist
 	private static final ArrayList<User> topTimes = new ArrayList<>();
-	private static File HISTORY_FILE;
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	long updateTime = 0;
@@ -35,7 +34,8 @@ public class PlayerData {
 		UUID uuid;
 		int playTime;
 
-		HISTORY = TimeTracker.getPlugin().createFile("playerhistory.yml", HISTORY_FILE);
+		File HISTORY_FILE = TimeTracker.getPlugin().createFile("playerhistory.yml");
+		HISTORY = YamlConfiguration.loadConfiguration(HISTORY_FILE);
 
 		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 		// Go through all offline players

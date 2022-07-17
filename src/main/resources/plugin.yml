@@ -1,6 +1,6 @@
 name: TimeTracker
 version: '${project.version}'
-main: me.roopekoo.toptime.TimeTracker
+main: me.roopekoo.timeTracker.TimeTracker
 api-version: 1.18
 authors: [ Roopekoo ]
 description: Displays playtime toplist

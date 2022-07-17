@@ -1,4 +1,4 @@
-package me.roopekoo.toptime;
+package me.roopekoo.timeTracker;
 
 import org.bukkit.command.CommandSender;
 

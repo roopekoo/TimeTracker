@@ -1,9 +1,9 @@
-package me.roopekoo.toptime.commands;
+package me.roopekoo.timeTracker.commands;
 
-import me.roopekoo.toptime.Messages;
-import me.roopekoo.toptime.PlayerData;
-import me.roopekoo.toptime.TimeConverter;
-import me.roopekoo.toptime.TimeTracker;
+import me.roopekoo.timeTracker.Messages;
+import me.roopekoo.timeTracker.PlayerData;
+import me.roopekoo.timeTracker.TimeConverter;
+import me.roopekoo.timeTracker.TimeTracker;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

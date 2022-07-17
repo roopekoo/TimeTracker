@@ -1,4 +1,4 @@
-package me.roopekoo.toptime;
+package me.roopekoo.timeTracker;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +20,7 @@ public enum Messages {
 	LIST_UPDATE("list-update", "&aUpdating top list... &ePlease wait&a!"),
 	TOPLIST_TITLE("toplist-title", "&aPlaytime toplist &e-- &6Page &c{0}&6/&c{1}"),
 	TOPLIST_MAIN("toplist-main", "&f{0}. {1}{2}&e: &6{3}"),
-	TOPLIST_FOOTER("toplist-footer", "&aProceed to the next page with &e/toptime {0}"),
+	TOPLIST_FOOTER("toplist-footer", "&aProceed to the next page with &e/timeTracker {0}"),
 	GETTIME("gettime", "{0}{1} &ahas a playtime of &6{2}"),
 	GETTIME_SELF("gettime-self", "&2Your &aplaytime is &6{0}"),
 	GETTIME_TOTAL("gettime-total", "&aCombined total playtime is &6{0}"),

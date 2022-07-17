@@ -1,7 +1,7 @@
-# TopTime
+# TimeTracker
 A simple top-list plugin to easily show player's playtime
 
-## Planned features:
+## Features:
 /toptime [timeFormat], shows the players ordered by playtime
 
 /toptime {pageNo} [timeFormat], shows the pageNo page. For example /toptime 3 shows the third toplist page, players 31st to 40th

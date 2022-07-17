@@ -1,7 +1,7 @@
-package me.roopekoo.toptime.commands;
+package me.roopekoo.timeTracker.commands;
 
-import me.roopekoo.toptime.PlayerData;
-import me.roopekoo.toptime.TimeConverter;
+import me.roopekoo.timeTracker.PlayerData;
+import me.roopekoo.timeTracker.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +28,7 @@ public class TabCompletition implements TabCompleter {
 				return converter.getTimeFormatsArray();
 			}
 		}
-		if(command.getName().equalsIgnoreCase("toptime")) {
+		if(command.getName().equalsIgnoreCase("timeTracker")) {
 			if(args.length == 1) {
 				List<String> list = new ArrayList<>();
 				int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);

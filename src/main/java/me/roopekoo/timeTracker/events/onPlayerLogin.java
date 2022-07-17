@@ -1,7 +1,7 @@
-package me.roopekoo.toptime.events;
+package me.roopekoo.timeTracker.events;
 
-import me.roopekoo.toptime.PlayerData;
-import me.roopekoo.toptime.TimeTracker;
+import me.roopekoo.timeTracker.PlayerData;
+import me.roopekoo.timeTracker.TimeTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

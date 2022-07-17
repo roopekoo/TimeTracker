@@ -1,9 +1,9 @@
-package me.roopekoo.toptime.commands;
+package me.roopekoo.timeTracker.commands;
 
-import me.roopekoo.toptime.Messages;
-import me.roopekoo.toptime.PlayerData;
-import me.roopekoo.toptime.TimeConverter;
-import me.roopekoo.toptime.TimeTracker;
+import me.roopekoo.timeTracker.Messages;
+import me.roopekoo.timeTracker.PlayerData;
+import me.roopekoo.timeTracker.TimeConverter;
+import me.roopekoo.timeTracker.TimeTracker;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +14,7 @@ public class TopTime implements CommandExecutor {
 	PlayerData playerData = TimeTracker.getPlugin().getPlayerData();
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission("timetracker.toptime")) {
+		if(!sender.hasPermission("timetracker.timeTracker")) {
 			sender.sendMessage(Messages.TITLE+Messages.NO_PERM.toString());
 			return true;
 		}
@@ -39,7 +39,7 @@ public class TopTime implements CommandExecutor {
 		}
 		if(args.length == 1) {
 			if(args[0].equalsIgnoreCase("force")) {
-				if(!sender.hasPermission("timetracker.toptime.force")) {
+				if(!sender.hasPermission("timetracker.timeTracker.force")) {
 					sender.sendMessage(Messages.TITLE+Messages.NO_PERM.toString());
 					return true;
 				}

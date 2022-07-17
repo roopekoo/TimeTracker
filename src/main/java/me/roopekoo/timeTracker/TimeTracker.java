@@ -1,9 +1,9 @@
-package me.roopekoo.toptime;
+package me.roopekoo.timeTracker;
 
-import me.roopekoo.toptime.commands.TabCompletition;
-import me.roopekoo.toptime.commands.TopTime;
-import me.roopekoo.toptime.commands.gettime;
-import me.roopekoo.toptime.events.onPlayerLogin;
+import me.roopekoo.timeTracker.commands.TabCompletition;
+import me.roopekoo.timeTracker.commands.TopTime;
+import me.roopekoo.timeTracker.commands.gettime;
+import me.roopekoo.timeTracker.events.onPlayerLogin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,8 +29,8 @@ public final class TimeTracker extends JavaPlugin {
 	@Override public void onEnable() {
 		// Plugin startup logic
 		plugin = this;
-		Objects.requireNonNull(plugin.getCommand("toptime")).setExecutor(new TopTime());
-		Objects.requireNonNull(plugin.getCommand("toptime")).setTabCompleter(new TabCompletition());
+		Objects.requireNonNull(plugin.getCommand("timeTracker")).setExecutor(new TopTime());
+		Objects.requireNonNull(plugin.getCommand("timeTracker")).setTabCompleter(new TabCompletition());
 		Objects.requireNonNull(plugin.getCommand("gettime")).setExecutor(new gettime());
 		Objects.requireNonNull(plugin.getCommand("gettime")).setTabCompleter(new TabCompletition());
 		Bukkit.getPluginManager().registerEvents(new onPlayerLogin(), plugin);
@@ -38,21 +38,22 @@ public final class TimeTracker extends JavaPlugin {
 		TimeTracker.getPlugin().getPlayerData().initializePlayerData();
 	}
 
-	public YamlConfiguration createFile(String filename, File file) {
-		File f = new File(getDataFolder(), filename);
-		if(!f.exists()) {
-			f.mkdir();
+	public File createFile(String filename) {
+		File file = new File(getDataFolder(), filename);
+		if(!file.exists()) {
+			file.mkdir();
 			try {
 				file.createNewFile();
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
 		}
-		return YamlConfiguration.loadConfiguration(file);
+		return file;
 	}
 
 	private void loadMessages() {
-		YamlConfiguration MSG = createFile("messages.yml", MSG_FILE);
+		MSG_FILE = createFile("messages.yml");
+		YamlConfiguration MSG = YamlConfiguration.loadConfiguration(MSG_FILE);
 		for(Messages item: Messages.values()) {
 			if(MSG.getString(item.getPath()) == null) {
 				MSG.set(item.getPath(), item.getDefault());
