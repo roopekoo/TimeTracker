@@ -38,22 +38,21 @@ public final class TimeTracker extends JavaPlugin {
 		TimeTracker.getPlugin().getPlayerData().initializePlayerData();
 	}
 
-	private void loadMessages() {
-		MSG_FILE = new File(getDataFolder(), "messages.yml");
-		if(!MSG_FILE.exists()) {
+	public YamlConfiguration createFile(String filename, File file) {
+		File f = new File(getDataFolder(), filename);
+		if(!f.exists()) {
+			f.mkdir();
 			try {
-				getDataFolder().mkdir();
-				MSG_FILE.createNewFile();
+				file.createNewFile();
 			} catch(IOException e) {
-				// Send notice
 				e.printStackTrace();
-				Bukkit.getLogger().log(Level.SEVERE, Messages.TITLE+Messages.FILE_CREATE_FAIL1.toString());
-				Bukkit.getLogger().log(Level.SEVERE, Messages.TITLE+Messages.FILE_CREATE_FAIL2.toString());
-				// Without it loaded, we can't send them messages
-				this.setEnabled(false);
 			}
 		}
-		YamlConfiguration MSG = YamlConfiguration.loadConfiguration(MSG_FILE);
+		return YamlConfiguration.loadConfiguration(file);
+	}
+
+	private void loadMessages() {
+		YamlConfiguration MSG = createFile("messages.yml", MSG_FILE);
 		for(Messages item: Messages.values()) {
 			if(MSG.getString(item.getPath()) == null) {
 				MSG.set(item.getPath(), item.getDefault());
@@ -68,6 +67,7 @@ public final class TimeTracker extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
+
 
 	private File getMsgFile() {
 		return MSG_FILE;

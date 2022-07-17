@@ -3,7 +3,14 @@ package me.roopekoo.toptime;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class PlayerData {
@@ -11,12 +18,14 @@ public class PlayerData {
 	private static final HashMap<String, User> playerMap = new HashMap<>();
 	//Main toplist
 	private static final ArrayList<User> topTimes = new ArrayList<>();
+	private static File HISTORY_FILE;
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	long updateTime = 0;
 	long totalTime = 0;
 	// 10-minute topList update delay
 	int UPDATEDELAY = 10*60*1000;
+	private YamlConfiguration HISTORY;
 
 	public static int getListSize() {
 		return topTimes.size();
@@ -25,6 +34,9 @@ public class PlayerData {
 	public void initializePlayerData() {
 		UUID uuid;
 		int playTime;
+
+		HISTORY = TimeTracker.getPlugin().createFile("playerhistory.yml", HISTORY_FILE);
+
 		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 		// Go through all offline players
 		for(OfflinePlayer offlinePlayer: offlinePlayers) {
@@ -34,10 +46,84 @@ public class PlayerData {
 
 			if(name != null) {
 				addNewPlayer(uuid, name, playTime, false);
+				if(noSectionInYML("players", uuid)) {
+					//Set reset time to amount of playtime on the server
+					HISTORY.set("players."+uuid+".day", playTime);
+					HISTORY.set("players."+uuid+".month", playTime);
+				}
 			}
-
 		}
+		checkDate("day");
+		checkDate("month");
+
 		sortTimes();
+	}
+
+	private void setTimer(long seconds, String selection) {
+
+		new BukkitRunnable() {
+			@Override public void run() {
+				LocalDate now = LocalDate.now();
+				LocalDateTime todayStart = now.atStartOfDay();
+				if(selection.equals("day")) {
+					LocalDateTime tomorrow = now.plusDays(1).atStartOfDay();
+					updateHistory(selection, todayStart, now, tomorrow);
+				}
+				if(selection.equals("month")) {
+					LocalDateTime nextMonth = now.plusMonths(1).atStartOfDay();
+					updateHistory(selection, todayStart, now, nextMonth);
+				}
+			}
+		}.runTaskLaterAsynchronously(TimeTracker.getPlugin(), seconds*20L);
+	}
+
+	private void checkDate(String selection) {
+		LocalDate now = LocalDate.now();
+		LocalDateTime todayStart = now.atStartOfDay();
+		if(noSectionInYML(selection, null)) {
+			HISTORY.set(selection, todayStart.toString());
+		} else {
+			String date = HISTORY.getString(selection);
+			assert date != null;
+			LocalDateTime oldDate = LocalDateTime.parse(date);
+			if(selection.equals("day")) {
+				if(oldDate.getDayOfMonth() != todayStart.getDayOfMonth()) {
+					LocalDateTime tomorrow = now.plusDays(1).atStartOfDay();
+					updateHistory(selection, todayStart, now, tomorrow);
+				}
+			}
+			if(selection.equals("month")) {
+				if(oldDate.getMonthValue() != todayStart.getMonthValue()) {
+					LocalDateTime nextMonth = now.plusMonths(1).atStartOfDay();
+					updateHistory(selection, todayStart, now, nextMonth);
+				}
+			}
+		}
+	}
+
+	private void updateHistory(String selection, LocalDateTime today, LocalDate now, LocalDateTime nextDate) {
+		UUID uuid;
+		int playTime;
+
+		HISTORY.set(selection, today.toString());
+		long diff = ChronoUnit.SECONDS.between(now, nextDate);
+		setTimer(diff, selection);
+
+		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+
+		for(OfflinePlayer offlinePlayer: offlinePlayers) {
+			uuid = offlinePlayer.getUniqueId();
+			playTime = offlinePlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
+			HISTORY.set("players."+uuid+"."+selection, playTime);
+		}
+	}
+
+	private boolean noSectionInYML(String section, UUID uuid) {
+		ConfigurationSection sec = HISTORY.getConfigurationSection(section);
+		if(uuid == null) {
+			return sec == null;
+		}
+		return sec == null || !sec.contains(uuid.toString());
 	}
 
 	public void sortTimes() {
