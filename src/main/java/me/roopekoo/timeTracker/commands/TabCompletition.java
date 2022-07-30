@@ -28,7 +28,7 @@ public class TabCompletition implements TabCompleter {
 				return converter.getTimeFormatsArray();
 			}
 		}
-		if(command.getName().equalsIgnoreCase("timeTracker")) {
+		if(command.getName().equalsIgnoreCase("toptime")) {
 			if(args.length == 1) {
 				List<String> list = new ArrayList<>();
 				int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);

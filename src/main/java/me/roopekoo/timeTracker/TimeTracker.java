@@ -29,8 +29,9 @@ public final class TimeTracker extends JavaPlugin {
 	@Override public void onEnable() {
 		// Plugin startup logic
 		plugin = this;
-		Objects.requireNonNull(plugin.getCommand("timeTracker")).setExecutor(new TopTime());
-		Objects.requireNonNull(plugin.getCommand("timeTracker")).setTabCompleter(new TabCompletition());
+		TabCompletition tabcompleter = new TabCompletition();
+		Objects.requireNonNull(plugin.getCommand("toptime")).setExecutor(new TopTime());
+		Objects.requireNonNull(plugin.getCommand("toptime")).setTabCompleter(tabcompleter);
 		Objects.requireNonNull(plugin.getCommand("gettime")).setExecutor(new gettime());
 		Objects.requireNonNull(plugin.getCommand("gettime")).setTabCompleter(new TabCompletition());
 		Bukkit.getPluginManager().registerEvents(new onPlayerLogin(), plugin);
