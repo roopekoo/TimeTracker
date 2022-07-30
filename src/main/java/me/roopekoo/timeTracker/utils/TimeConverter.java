@@ -75,10 +75,7 @@ public class TimeConverter {
 			s = s+value+"m";
 			ticks = (long) (ticks-value*TicksToUnit.MINUTE.value);
 		}
-		if(ticks/TicksToUnit.SECOND.value>1) {
-			s = s+ticks/TicksToUnit.SECOND.value+"s";
-		}
-		return s;
+		return s+ticks/TicksToUnit.SECOND.value+"s";
 	}
 
 	public boolean isTimeFormat(String value) {
