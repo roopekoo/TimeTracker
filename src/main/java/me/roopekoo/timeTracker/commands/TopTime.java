@@ -2,9 +2,9 @@ package me.roopekoo.timeTracker.commands;
 
 import me.roopekoo.timeTracker.Messages;
 import me.roopekoo.timeTracker.PlayerData;
-import me.roopekoo.timeTracker.TimeConverter;
 import me.roopekoo.timeTracker.TimeTracker;
-import org.apache.commons.lang.math.NumberUtils;
+import me.roopekoo.timeTracker.utils.TimeConverter;
+import me.roopekoo.timeTracker.utils.Utilities;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,6 +12,8 @@ import org.bukkit.command.CommandSender;
 public class TopTime implements CommandExecutor {
 	TimeConverter converter = new TimeConverter();
 	PlayerData playerData = TimeTracker.getPlugin().getPlayerData();
+	Utilities util;
+
 
 	@Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission("timetracker.timeTracker")) {
@@ -24,7 +26,7 @@ public class TopTime implements CommandExecutor {
 		}
 		if(args.length == 2) {
 			//check arg1 is number
-			if(isPositiveInteger(args[0])) {
+			if(util.isPositiveInteger(args[0])) {
 				//Check if timeformat is correct
 				if(converter.isTimeFormat(args[1])) {
 					converter.printTopList(sender, args[0], args[1]);
@@ -48,7 +50,7 @@ public class TopTime implements CommandExecutor {
 				return true;
 			}
 			//check if arg 1 is valid number
-			if(isPositiveInteger(args[0])) {
+			if(util.isPositiveInteger(args[0])) {
 				converter.printTopList(sender, args[0], "");
 				return true;
 			}
@@ -62,13 +64,5 @@ public class TopTime implements CommandExecutor {
 		}
 		converter.printTopList(sender, "", "");
 		return true;
-	}
-
-	private boolean isPositiveInteger(String number) {
-		if(!NumberUtils.isDigits(number)) {
-			return false;
-		}
-		int integer = Integer.parseInt(number);
-		return integer>=1;
 	}
 }
