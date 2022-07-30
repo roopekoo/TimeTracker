@@ -1,4 +1,4 @@
-package me.roopekoo.timeTracker;
+package me.roopekoo.timeTracker.utils;
 
 import org.bukkit.command.CommandSender;
 

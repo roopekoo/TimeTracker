@@ -1,7 +1,7 @@
 package me.roopekoo.timeTracker.commands;
 
 import me.roopekoo.timeTracker.PlayerData;
-import me.roopekoo.timeTracker.TimeConverter;
+import me.roopekoo.timeTracker.utils.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

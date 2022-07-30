@@ -1,5 +1,6 @@
 package me.roopekoo.timeTracker;
 
+import me.roopekoo.timeTracker.utils.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
@@ -20,10 +21,12 @@ public class PlayerData {
 	private static final ArrayList<User> topTimes = new ArrayList<>();
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
+	TimeConverter converter = new TimeConverter();
 	long updateTime = 0;
 	long totalTime = 0;
 	// 10-minute topList update delay
 	int UPDATEDELAY = 10*60*1000;
+	List<String> historySelectors = converter.getTimeHistoryArray();
 	private YamlConfiguration HISTORY;
 
 	public static int getListSize() {
@@ -53,9 +56,9 @@ public class PlayerData {
 				}
 			}
 		}
-		checkDate("day");
-		checkDate("month");
-
+		for(String e: historySelectors) {
+			checkDate(e);
+		}
 		sortTimes();
 	}
 
