@@ -85,54 +85,75 @@ public class PlayerData {
 	}
 
 	private void setTimer(long seconds, String selection) {
-
 		new BukkitRunnable() {
 			@Override public void run() {
-				LocalDate now = LocalDate.now();
-				LocalDateTime todayStart = now.atStartOfDay();
-				if(selection.equals("day")) {
-					LocalDateTime tomorrow = now.plusDays(1).atStartOfDay();
-					updateHistory(selection, todayStart, now, tomorrow);
-				}
-				if(selection.equals("month")) {
-					LocalDateTime nextMonth = now.plusMonths(1).atStartOfDay();
-					updateHistory(selection, todayStart, now, nextMonth);
-				}
+				updateHistory(selection);
 			}
-		}.runTaskLaterAsynchronously(TimeTracker.getPlugin(), seconds*20L);
+		}.runTaskLater(TimeTracker.getPlugin(), seconds*20L);
 	}
 
+	/**
+	 Checks if current history selector is in the YML If not, create it
+	 */
 	private void checkDate(String selection) {
-		LocalDate now = LocalDate.now();
-		LocalDateTime todayStart = now.atStartOfDay();
+		LocalDate today = LocalDate.now();
+		LocalDateTime todayStart = today.atStartOfDay();
 		if(noSectionInYML(selection, null)) {
-			HISTORY.set(selection, todayStart.toString());
-		} else {
-			String date = HISTORY.getString(selection);
-			assert date != null;
-			LocalDateTime oldDate = LocalDateTime.parse(date);
-			if(selection.equals("day")) {
-				if(oldDate.getDayOfMonth() != todayStart.getDayOfMonth()) {
-					LocalDateTime tomorrow = now.plusDays(1).atStartOfDay();
-					updateHistory(selection, todayStart, now, tomorrow);
-				}
-			}
-			if(selection.equals("month")) {
-				if(oldDate.getMonthValue() != todayStart.getMonthValue()) {
-					LocalDateTime nextMonth = now.plusMonths(1).atStartOfDay();
-					updateHistory(selection, todayStart, now, nextMonth);
-				}
+			LocalDateTime nextDate;
+			switch(selection) {
+				case "day":
+					HISTORY.set(selection, todayStart.toString());
+					break;
+				case "month":
+					nextDate = today.with(firstDayOfMonth()).atStartOfDay();
+					HISTORY.set(selection, nextDate.toString());
+					break;
+				case "year":
+					nextDate = today.with(firstDayOfYear()).atStartOfDay();
+					HISTORY.set(selection, nextDate.toString());
+					break;
 			}
 		}
+		updateHistory(selection);
 	}
 
-	private void updateHistory(String selection, LocalDateTime today, LocalDate now, LocalDateTime nextDate) {
-		UUID uuid;
-		int playTime;
+	private void updateHistory(String selection) {
+		LocalDate today = LocalDate.now();
+		LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+		boolean updateYML = false;
 
-		HISTORY.set(selection, today.toString());
-		long diff = ChronoUnit.SECONDS.between(now, nextDate);
-		setTimer(diff, selection);
+		String date = HISTORY.getString(selection);
+		assert date != null;
+		LocalDateTime oldDate = LocalDateTime.parse(date);
+
+		LocalDateTime nextDate = todayStart;
+		switch(selection) {
+			case "day":
+				nextDate = today.plusDays(1).atStartOfDay();
+				if(oldDate.getDayOfMonth() != todayStart.getDayOfMonth()) {
+					updateYML = true;
+				}
+				break;
+			case "month":
+				nextDate = today.with(firstDayOfNextMonth()).atStartOfDay();
+				if(oldDate.getMonthValue() != todayStart.getMonthValue()) {
+					updateYML = true;
+				}
+				break;
+			case "year":
+				nextDate = today.with(firstDayOfNextYear()).atStartOfDay();
+				if(oldDate.getYear() != todayStart.getYear()) {
+					updateYML = true;
+				}
+				break;
+		}
+		if(updateYML) {
+			UUID uuid;
+			int playTime;
+			User user;
+
+			//update date on YML
+			HISTORY.set(selection, todayStart.toString());
 
 			OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 			for(OfflinePlayer offlinePlayer: offlinePlayers) {
@@ -160,10 +181,10 @@ public class PlayerData {
 	}
 
 	private boolean noSectionInYML(String section, UUID uuid) {
-		ConfigurationSection sec = HISTORY.getConfigurationSection(section);
 		if(uuid == null) {
-			return sec == null;
+			return HISTORY.getString(section) == null;
 		}
+		ConfigurationSection sec = HISTORY.getConfigurationSection(section);
 		return sec == null || !sec.contains(uuid.toString());
 	}
 
