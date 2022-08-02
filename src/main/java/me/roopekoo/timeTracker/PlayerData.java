@@ -21,6 +21,8 @@ import java.util.concurrent.ForkJoinPool;
 import static java.time.temporal.TemporalAdjusters.*;
 
 public class PlayerData {
+	private static final String BASEDIR = "plugins/TimeTracker";
+	private static final String PATH = "/playerhistory.yml";
 	//Store players to memory
 	private static final HashMap<String, User> playerMap = new HashMap<>();
 	//Main toplist
@@ -40,6 +42,22 @@ public class PlayerData {
 
 	List<String> historySelectors = converter.getTimeHistoryArray();
 	private YamlConfiguration HISTORY;
+
+	public PlayerData()
+	{
+		File f = new File(BASEDIR);
+		if(!f.exists()) {
+			f.mkdir();
+		}
+		if(!f.exists()) {
+			try {
+				HISTORY_FILE.createNewFile();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		HISTORY = YamlConfiguration.loadConfiguration(HISTORY_FILE);
+	}
 
 	public static int getListSize(String selector) {
 		int size = 0;
