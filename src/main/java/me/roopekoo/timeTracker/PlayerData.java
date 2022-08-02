@@ -41,7 +41,7 @@ public class PlayerData {
 	int UPDATEDELAY = 10*60*1000;
 
 	List<String> historySelectors = converter.getTimeHistoryArray();
-	private YamlConfiguration HISTORY;
+	private final YamlConfiguration HISTORY;
 
 	public PlayerData() {
 		File f = new File(BASEDIR);
@@ -156,9 +156,6 @@ public class PlayerData {
 		int dayR;
 		int monthR;
 		int yearR;
-
-		HISTORY_FILE = TimeTracker.getPlugin().createFile("playerhistory.yml");
-		HISTORY = YamlConfiguration.loadConfiguration(HISTORY_FILE);
 
 		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 		// Go through all offline players
