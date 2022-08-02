@@ -7,10 +7,13 @@ description: Displays playtime toplist
 commands:
   gettime:
     description: 'Show player playtime'
-    usage: /<command> [playerName] <y/mo/d/h/m/s/ms/t>
+    usage: /<command> [playerName] <timeFormat>
   toptime:
     description: 'List players based on playtime'
-    usage: /<command> [page] <y/mo/d/h/m/s/ms/t>
+    usage: /<command> [page] <timeFormat>
+  playhistory:
+    description: 'Show player playtime in certain time-range, e.g day/month/year playtime'
+    usage: /<command> [playerName] [day/month/year] <timeFormat>
 permissions:
   timetracker.gettime:
     description: "Allows to see other players' playtime"
@@ -21,3 +24,6 @@ permissions:
   timetracker.toptime.force:
     description: "Allows to update the toplist"
     default: op
+  timetracker.playhistory:
+    description: "Allows to see the playtimehistory of a player"
+    default: true
