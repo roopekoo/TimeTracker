@@ -9,10 +9,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
+
+import static java.time.temporal.TemporalAdjusters.*;
 
 public class PlayerData {
 	//Store players to memory
@@ -70,6 +74,16 @@ public class PlayerData {
 		sortTimes();
 	}
 
+	public void writeFile() {
+		ForkJoinPool.commonPool().submit(()->{
+			try {
+				HISTORY.save(HISTORY_FILE);
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
 	private void setTimer(long seconds, String selection) {
 
 		new BukkitRunnable() {
@@ -120,13 +134,29 @@ public class PlayerData {
 		long diff = ChronoUnit.SECONDS.between(now, nextDate);
 		setTimer(diff, selection);
 
-		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
-
-		for(OfflinePlayer offlinePlayer: offlinePlayers) {
-			uuid = offlinePlayer.getUniqueId();
-			playTime = offlinePlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
-			HISTORY.set("players."+uuid+"."+selection, playTime);
+			OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+			for(OfflinePlayer offlinePlayer: offlinePlayers) {
+				uuid = offlinePlayer.getUniqueId();
+				playTime = offlinePlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
+				user = playerMap.get(uuid.toString());
+				switch(selection) {
+					case "day":
+						user.dayReset = playTime;
+						break;
+					case "month":
+						user.monthReset = playTime;
+						break;
+					case "year":
+						user.yearReset = playTime;
+						break;
+				}
+				HISTORY.set("players."+uuid+"."+selection, playTime);
+			}
 		}
+		LocalDateTime now = LocalDateTime.now();
+		long diff = Duration.between(now, nextDate).toSeconds();
+		setTimer(diff, selection);
+		writeFile();
 	}
 
 	private boolean noSectionInYML(String section, UUID uuid) {
