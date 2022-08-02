@@ -30,7 +30,7 @@ public class PlayerData {
 	private static final ArrayList<User> topDay = new ArrayList<>();
 	private static final ArrayList<User> topMonth = new ArrayList<>();
 	private static final ArrayList<User> topYear = new ArrayList<>();
-	private static File HISTORY_FILE;
+	private static File HISTORY_FILE = new File(BASEDIR+PATH);
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	private final TimeConverter converter = new TimeConverter();
@@ -43,8 +43,7 @@ public class PlayerData {
 	List<String> historySelectors = converter.getTimeHistoryArray();
 	private YamlConfiguration HISTORY;
 
-	public PlayerData()
-	{
+	public PlayerData() {
 		File f = new File(BASEDIR);
 		if(!f.exists()) {
 			f.mkdir();
