@@ -41,6 +41,27 @@ public class TabCompletition implements TabCompleter {
 				return converter.getTimeFormatsArray();
 			}
 		}
+		if(command.getName().equalsIgnoreCase("playhistory")) {
+			if(args.length == 1) {
+				List<String> list = converter.getTimeHistoryArray();
+				if(!converter.isTimeHistory(args[0])) {
+					for(Player p: Bukkit.getOnlinePlayers()) {
+						list.add(p.getName());
+					}
+				}
+				return list;
+			}
+			if(args.length == 2) {
+				if(converter.isTimeHistory(args[0])) {
+					return converter.getTimeFormatsArray();
+				} else {
+					return converter.getTimeHistoryArray();
+				}
+			}
+			if(args.length == 3) {
+				return converter.getTimeFormatsArray();
+			}
+		}
 		return null;
 	}
 }

@@ -19,6 +19,7 @@ public class PlayerData {
 	private static final HashMap<String, User> playerMap = new HashMap<>();
 	//Main toplist
 	private static final ArrayList<User> topTimes = new ArrayList<>();
+	private static File HISTORY_FILE;
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	TimeConverter converter = new TimeConverter();
@@ -36,8 +37,11 @@ public class PlayerData {
 	public void initializePlayerData() {
 		UUID uuid;
 		int playTime;
+		int dayR;
+		int monthR;
+		int yearR;
 
-		File HISTORY_FILE = TimeTracker.getPlugin().createFile("playerhistory.yml");
+		HISTORY_FILE = TimeTracker.getPlugin().createFile("playerhistory.yml");
 		HISTORY = YamlConfiguration.loadConfiguration(HISTORY_FILE);
 
 		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
@@ -48,12 +52,16 @@ public class PlayerData {
 			playTime = offlinePlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
 
 			if(name != null) {
-				addNewPlayer(uuid, name, playTime, false);
 				if(noSectionInYML("players", uuid)) {
 					//Set reset time to amount of playtime on the server
 					HISTORY.set("players."+uuid+".day", playTime);
 					HISTORY.set("players."+uuid+".month", playTime);
+					HISTORY.set("players."+uuid+".year", playTime);
 				}
+				dayR = HISTORY.getInt("players."+uuid+".day");
+				monthR = HISTORY.getInt("players."+uuid+".month");
+				yearR = HISTORY.getInt("players."+uuid+".year");
+				addNewPlayer(uuid, name, playTime, false, dayR, monthR, yearR);
 			}
 		}
 		for(String e: historySelectors) {
@@ -183,11 +191,11 @@ public class PlayerData {
 		playerMap.get(uuid.toString()).isOnline = b;
 	}
 
-	public void addNewPlayer(UUID uuid, String name, int playTime, boolean isOnline) {
+	public void addNewPlayer(UUID uuid, String name, int playTime, boolean isOnline, int dayR, int monthR, int yearR) {
 		totalTime += playTime;
 
 		// Create new User
-		User user = new User(uuid, name, playTime, isOnline);
+		User user = new User(uuid, name, playTime, isOnline, dayR, monthR, yearR);
 		//Put player to the playerMap
 		playerMap.put(uuid.toString(), user);
 		assert name != null;
@@ -215,23 +223,54 @@ public class PlayerData {
 		return playerMap.get(uuid.toString()).name;
 	}
 
+	public long getResetTime(String username, String timeHistory) {
+		UUID uuid = name2uuid.get(username.toLowerCase());
+		User user = playerMap.get(uuid.toString());
+		int resettime = 0;
+
+		switch(timeHistory) {
+			case "day":
+				resettime = user.dayReset;
+				break;
+			case "month":
+				resettime = user.monthReset;
+				break;
+			case "year":
+				resettime = user.yearReset;
+				break;
+		}
+		if(user.isOnline) {
+			int ticks = Bukkit.getOfflinePlayer(user.uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
+			user.playTimeTicks = ticks;
+			return ticks-resettime;
+		}
+		return user.playTimeTicks-resettime;
+	}
+
 	static class compTimes implements Comparator<User> {
 		@Override public int compare(User o1, User o2) {
 			return Integer.compare(o2.playTimeTicks, o1.playTimeTicks);
 		}
 	}
 
-	static class User {
-		private final UUID uuid;
-		String name;
+	public static class User {
+		public String name;
+		public boolean isOnline;
+		UUID uuid;
 		int playTimeTicks;
-		boolean isOnline;
+		int dayReset;
+		int monthReset;
+		int yearReset;
 
-		public User(UUID uuid, String name, int playTimeTicks, boolean isOnline) {
+		public User(UUID uuid, String name, int playTimeTicks, boolean isOnline, int dayReset, int monthReset,
+		            int yearReset) {
 			this.uuid = uuid;
 			this.name = name;
 			this.playTimeTicks = playTimeTicks;
 			this.isOnline = isOnline;
+			this.dayReset = dayReset;
+			this.monthReset = monthReset;
+			this.yearReset = yearReset;
 		}
 	}
 }

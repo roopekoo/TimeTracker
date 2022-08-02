@@ -1,11 +1,15 @@
 package me.roopekoo.timeTracker.utils;
 
+import me.roopekoo.timeTracker.Messages;
+import me.roopekoo.timeTracker.PlayerData;
+import me.roopekoo.timeTracker.TimeTracker;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
 public class TimeConverter {
 	private static final HashMap<String, TicksToUnit> TimeFormats;
+	private static final HashSet<String> timeHistory;
 	private static final HashMap<String, String> longUnit2Short;
 
 	static {
@@ -26,6 +30,13 @@ public class TimeConverter {
 		TimeFormats.put("millisecond", TicksToUnit.MILLISECOND);
 		TimeFormats.put("t", TicksToUnit.TICK);
 		TimeFormats.put("tick", TicksToUnit.TICK);
+	}
+
+	static {
+		timeHistory = new HashSet<>();
+		timeHistory.add("year");
+		timeHistory.add("month");
+		timeHistory.add("day");
 	}
 
 	static {
@@ -80,6 +91,18 @@ public class TimeConverter {
 
 	public boolean isTimeFormat(String value) {
 		return TimeFormats.containsKey(value);
+	}
+
+	public boolean isTimeHistory(String value) {
+		return timeHistory.contains(value);
+	}
+
+	public String getHistory(String username, String timeHistory, String timeFormat) {
+		long playtime = playerData.getResetTime(username, timeHistory);
+		if(Objects.equals(timeFormat, "")) {
+			return fullTimeToStr(playtime);
+		}
+		return formatPlaytime(playtime, timeFormat);
 	}
 
 	public String getPlaytime(String username, String timeFormat) {
@@ -154,6 +177,10 @@ public class TimeConverter {
 				sender.sendMessage(Messages.TOPLIST_FOOTER.toString().replace("{0}", pageNo));
 			}
 		}
+	}
+
+	public List<String> getTimeHistoryArray() {
+		return new ArrayList<>(timeHistory);
 	}
 
 	private enum TicksToUnit {

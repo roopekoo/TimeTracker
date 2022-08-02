@@ -11,11 +11,14 @@ public enum Messages {
 	SAVE_FAIL2("save-fail2", "&cReport this stack trace to Roopekoo."),
 	NO_PERM("no-permission", "&cYou do not have permission to do that!"),
 	TOO_MANY_PARAMS("too-many-parameters", "&cToo many parameters!"),
+	NOT_ENOUGH_PARAMS("not-enough-parameters", "&cNot enough parameters!"),
 	INVALID_USERNAME("invalid-username", "&cInvalid username"),
 	INVALID_PAGE_NO("invalid-page-number", "&cInvalid page number!"),
 	INVALID_PAGE("invalid page", "&cThat page does not exist!"),
 	INVALID_PARAM("invalid-parameter", "&cInvalid parameter!"),
 	INVALID_TIME_FORMAT("invalid-time-format", "&cInvalid time format!"),
+	HISTORY_SELF("history-self", "&2Your &aplaytime in this &e{0} &ais &6{1}"),
+	HISTORY("history", "{0}{1} &ahas a playtime of &6{2} &ain this {3}"),
 	FORCE_UPDATED("force-updated", "&aPlaytime toplist has been &cforce&6-updated&a!"),
 	LIST_UPDATE("list-update", "&aUpdating top list... &ePlease wait&a!"),
 	TOPLIST_TITLE("toplist-title", "&aPlaytime toplist &e-- &6Page &c{0}&6/&c{1}"),
@@ -26,7 +29,10 @@ public enum Messages {
 	GETTIME_TOTAL("gettime-total", "&aCombined total playtime is &6{0}"),
 	PLAYER_REQUIRED("player-required", "&cPlayername required!"),
 	ONLINE("online", "&2"),
-	OFFLINE("offline", "&8");
+	OFFLINE("offline", "&8"),
+	DAY("day", "&eday"),
+	MONTH("month", "&emonth"),
+	YEAR("year", "&eyear");
 
 	private static YamlConfiguration MSG;
 	private final String def;
@@ -39,6 +45,14 @@ public enum Messages {
 
 	public static void setFile(YamlConfiguration messages) {
 		MSG = messages;
+	}
+
+	public static Messages fromString(String code) {
+		for(Messages e: Messages.values()) {
+			if(e.path.equals(code))
+				return e;
+		}
+		return null;
 	}
 
 	@Override public String toString() {

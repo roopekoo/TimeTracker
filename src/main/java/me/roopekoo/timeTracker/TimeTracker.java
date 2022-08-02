@@ -3,6 +3,7 @@ package me.roopekoo.timeTracker;
 import me.roopekoo.timeTracker.commands.TabCompletition;
 import me.roopekoo.timeTracker.commands.TopTime;
 import me.roopekoo.timeTracker.commands.gettime;
+import me.roopekoo.timeTracker.commands.playHistory;
 import me.roopekoo.timeTracker.events.onPlayerLogin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,7 +34,9 @@ public final class TimeTracker extends JavaPlugin {
 		Objects.requireNonNull(plugin.getCommand("toptime")).setExecutor(new TopTime());
 		Objects.requireNonNull(plugin.getCommand("toptime")).setTabCompleter(tabcompleter);
 		Objects.requireNonNull(plugin.getCommand("gettime")).setExecutor(new gettime());
-		Objects.requireNonNull(plugin.getCommand("gettime")).setTabCompleter(new TabCompletition());
+		Objects.requireNonNull(plugin.getCommand("gettime")).setTabCompleter(tabcompleter);
+		Objects.requireNonNull(plugin.getCommand("playhistory")).setExecutor(new playHistory());
+		Objects.requireNonNull(plugin.getCommand("playhistory")).setTabCompleter(tabcompleter);
 		Bukkit.getPluginManager().registerEvents(new onPlayerLogin(), plugin);
 		loadMessages();
 		TimeTracker.getPlugin().getPlayerData().initializePlayerData();
