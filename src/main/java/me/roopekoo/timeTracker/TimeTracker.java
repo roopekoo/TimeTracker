@@ -1,10 +1,8 @@
 package me.roopekoo.timeTracker;
 
-import me.roopekoo.timeTracker.commands.TabCompletition;
-import me.roopekoo.timeTracker.commands.TopTime;
-import me.roopekoo.timeTracker.commands.gettime;
-import me.roopekoo.timeTracker.commands.playHistory;
+import me.roopekoo.timeTracker.commands.*;
 import me.roopekoo.timeTracker.events.onPlayerLogin;
+import me.roopekoo.timeTracker.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,12 +29,14 @@ public final class TimeTracker extends JavaPlugin {
 		// Plugin startup logic
 		plugin = this;
 		TabCompletition tabcompleter = new TabCompletition();
-		Objects.requireNonNull(plugin.getCommand("toptime")).setExecutor(new TopTime());
-		Objects.requireNonNull(plugin.getCommand("toptime")).setTabCompleter(tabcompleter);
 		Objects.requireNonNull(plugin.getCommand("gettime")).setExecutor(new gettime());
 		Objects.requireNonNull(plugin.getCommand("gettime")).setTabCompleter(tabcompleter);
+		Objects.requireNonNull(plugin.getCommand("toptime")).setExecutor(new TopTime());
+		Objects.requireNonNull(plugin.getCommand("toptime")).setTabCompleter(tabcompleter);
 		Objects.requireNonNull(plugin.getCommand("playhistory")).setExecutor(new playHistory());
 		Objects.requireNonNull(plugin.getCommand("playhistory")).setTabCompleter(tabcompleter);
+		Objects.requireNonNull(plugin.getCommand("topplayhistory")).setExecutor(new topPlayHistory());
+		Objects.requireNonNull(plugin.getCommand("topplayhistory")).setTabCompleter(tabcompleter);
 		Bukkit.getPluginManager().registerEvents(new onPlayerLogin(), plugin);
 		loadMessages();
 		TimeTracker.getPlugin().getPlayerData().initializePlayerData();

@@ -30,12 +30,7 @@ public class TabCompletition implements TabCompleter {
 		}
 		if(command.getName().equalsIgnoreCase("toptime")) {
 			if(args.length == 1) {
-				List<String> list = new ArrayList<>();
-				int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);
-				for(int i = 0; i<pages; i++) {
-					list.add(String.valueOf(i+1));
-				}
-				return list;
+				return getNumberArray("total");
 			}
 			if(args.length == 2) {
 				return converter.getTimeFormatsArray();
@@ -62,6 +57,28 @@ public class TabCompletition implements TabCompleter {
 				return converter.getTimeFormatsArray();
 			}
 		}
+		if(command.getName().equalsIgnoreCase("topplayhistory")) {
+			if(args.length == 1) {
+				return converter.getTimeHistoryArray();
+			}
+			if(args.length == 2) {
+				if(converter.isTimeHistory(args[0])) {
+					return getNumberArray(args[0]);
+				}
+			}
+			if(args.length == 3) {
+				return converter.getTimeFormatsArray();
+			}
+		}
 		return null;
+	}
+
+	private List<String> getNumberArray(String selector) {
+		int pages = (int) Math.ceil((double) PlayerData.getListSize(selector)/10);
+		List<String> list = new ArrayList<>();
+		for(int i = 0; i<pages; i++) {
+			list.add(String.valueOf(i+1));
+		}
+		return list;
 	}
 }

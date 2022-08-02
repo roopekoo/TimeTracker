@@ -1,10 +1,5 @@
 package me.roopekoo.timeTracker.utils;
 
-import me.roopekoo.timeTracker.Messages;
-import me.roopekoo.timeTracker.PlayerData;
-import me.roopekoo.timeTracker.TimeTracker;
-import org.bukkit.command.CommandSender;
-
 import java.util.*;
 
 public class TimeConverter {
@@ -51,14 +46,12 @@ public class TimeConverter {
 		longUnit2Short.put("tick", "t");
 	}
 
-	PlayerData playerData = TimeTracker.getPlugin().getPlayerData();
-
 	public ArrayList<String> getTimeFormatsArray() {
 		Set<String> formatSet = TimeFormats.keySet();
 		return new ArrayList<>(formatSet);
 	}
 
-	private String fullTimeToStr(long ticks) {
+	public String fullTimeToStr(long ticks) {
 		int value;
 		String s = "";
 		if(ticks/TicksToUnit.YEAR.value>1) {
@@ -97,23 +90,7 @@ public class TimeConverter {
 		return timeHistory.contains(value);
 	}
 
-	public String getHistory(String username, String timeHistory, String timeFormat) {
-		long playtime = playerData.getResetTime(username, timeHistory);
-		if(Objects.equals(timeFormat, "")) {
-			return fullTimeToStr(playtime);
-		}
-		return formatPlaytime(playtime, timeFormat);
-	}
-
-	public String getPlaytime(String username, String timeFormat) {
-		long playtime = playerData.getPlaytime(username);
-		if(Objects.equals(timeFormat, "")) {
-			return fullTimeToStr(playtime);
-		}
-		return formatPlaytime(playtime, timeFormat);
-	}
-
-	private String formatPlaytime(long playtime, String timeFormat) {
+	public String formatPlaytime(long playtime, String timeFormat) {
 		double unit = TimeFormats.get(timeFormat).value;
 		String format = timeFormat;
 		if(longUnit2Short.containsKey(timeFormat)) {
@@ -123,60 +100,6 @@ public class TimeConverter {
 			return String.format("%,.0f", playtime/unit)+format;
 		}
 		return String.format("%,.2f", playtime/unit)+format;
-	}
-
-	public void printTopList(CommandSender sender, String pageNo, String timeFormat) {
-		//check that pageNo is not too big
-		int pages = (int) Math.ceil((double) PlayerData.getListSize()/10);
-		String pageStr = String.valueOf(pages);
-		int page;
-		if(pageNo.equals("")) {
-			page = 1;
-		} else {
-			page = Integer.parseInt(pageNo);
-		}
-		if(page>pages) {
-			sender.sendMessage(Messages.TITLE+Messages.INVALID_PAGE.toString());
-		} else {
-			String username;
-			String playtime;
-			String index;
-			Messages isOnline;
-			long ticks;
-			int userIndex = (page-1)*10+1;
-			//Check if list needs refreshing
-			if(playerData.isTopListOld()) {
-				sender.sendMessage(Messages.TITLE+Messages.LIST_UPDATE.toString());
-				playerData.sortTimes();
-			}
-			pageNo = String.valueOf(page);
-			sender.sendMessage(
-					Messages.TITLE+Messages.TOPLIST_TITLE.toString().replace("{0}", pageNo).replace("{1}", pageStr));
-			//Get correct slice of toplist
-			List<PlayerData.User> topListPage = playerData.getTopListPage(page);
-			for(PlayerData.User user: topListPage) {
-				isOnline = Messages.OFFLINE;
-				username = user.name;
-				ticks = playerData.getPlaytime(username);
-				if(timeFormat.equals("")) {
-					playtime = fullTimeToStr(ticks);
-				} else {
-					playtime = formatPlaytime(ticks, timeFormat);
-				}
-				if(user.isOnline) {
-					isOnline = Messages.ONLINE;
-				}
-				index = String.valueOf(userIndex);
-				sender.sendMessage(
-						Messages.TOPLIST_MAIN.toString().replace("{0}", index).replace("{1}", isOnline.toString())
-						                     .replace("{2}", username).replace("{3}", playtime));
-				userIndex++;
-			}
-			if(page != pages) {
-				pageNo = String.valueOf(page+1);
-				sender.sendMessage(Messages.TOPLIST_FOOTER.toString().replace("{0}", pageNo));
-			}
-		}
 	}
 
 	public List<String> getTimeHistoryArray() {

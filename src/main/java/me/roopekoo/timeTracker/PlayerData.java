@@ -1,9 +1,11 @@
 package me.roopekoo.timeTracker;
 
+import me.roopekoo.timeTracker.utils.Messages;
 import me.roopekoo.timeTracker.utils.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,19 +25,112 @@ public class PlayerData {
 	private static final HashMap<String, User> playerMap = new HashMap<>();
 	//Main toplist
 	private static final ArrayList<User> topTimes = new ArrayList<>();
+	private static final ArrayList<User> topDay = new ArrayList<>();
+	private static final ArrayList<User> topMonth = new ArrayList<>();
+	private static final ArrayList<User> topYear = new ArrayList<>();
 	private static File HISTORY_FILE;
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
-	TimeConverter converter = new TimeConverter();
+	private final TimeConverter converter = new TimeConverter();
+
 	long updateTime = 0;
 	long totalTime = 0;
 	// 10-minute topList update delay
 	int UPDATEDELAY = 10*60*1000;
+
 	List<String> historySelectors = converter.getTimeHistoryArray();
 	private YamlConfiguration HISTORY;
 
-	public static int getListSize() {
-		return topTimes.size();
+	public static int getListSize(String selector) {
+		int size = 0;
+		switch(selector) {
+			case "total":
+				size = topTimes.size();
+				break;
+			case "day":
+				size = topDay.size();
+				break;
+			case "month":
+				size = topMonth.size();
+				break;
+			case "year":
+				size = topYear.size();
+				break;
+		}
+		return size;
+	}
+
+	public void printTopList(CommandSender sender, String pageNo, String selector, String timeFormat) {
+		//check that pageNo is not too big
+		int pages = (int) Math.ceil((double) PlayerData.getListSize(selector)/10);
+		String pageStr = String.valueOf(pages);
+		int page;
+		if(pageNo.equals("")) {
+			page = 1;
+		} else {
+			page = Integer.parseInt(pageNo);
+		}
+		if(page>pages) {
+			sender.sendMessage(Messages.TITLE+Messages.INVALID_PAGE.toString());
+		} else {
+			String username;
+			String playtime;
+			String index;
+			Messages isOnline;
+			long ticks;
+			int userIndex = (page-1)*10+1;
+			//Check if list needs refreshing
+			if(isTopListOld()) {
+				sender.sendMessage(Messages.TITLE+Messages.LIST_UPDATE.toString());
+				sortTimes(selector);
+			}
+			pageNo = String.valueOf(page);
+			if(selector.equals("")) {
+				sender.sendMessage(Messages.TITLE+
+				                   Messages.TOPLIST_TITLE.toString().replace("{0}", pageNo).replace("{1}", pageStr));
+			} else {
+				sender.sendMessage(Messages.TITLE+
+				                   Messages.TPH_TITLE.toString().replace("{0}", selector).replace("{1}", pageNo)
+				                                     .replace("{2}", pageStr));
+			}
+			//Get correct slice of toplist
+			List<PlayerData.User> topListPage = getTopListPage(page, selector);
+			for(PlayerData.User user: topListPage) {
+				isOnline = Messages.OFFLINE;
+				username = user.name;
+				ticks = getPlaytime(username);
+				if(timeFormat.equals("")) {
+					playtime = converter.fullTimeToStr(ticks);
+				} else {
+					playtime = converter.formatPlaytime(ticks, timeFormat);
+				}
+				if(user.isOnline) {
+					isOnline = Messages.ONLINE;
+				}
+				index = String.valueOf(userIndex);
+				sender.sendMessage(
+						Messages.TOPLIST_MAIN.toString().replace("{0}", index).replace("{1}", isOnline.toString())
+						                     .replace("{2}", username).replace("{3}", playtime));
+				userIndex++;
+			}
+			if(page != pages) {
+				pageNo = String.valueOf(page+1);
+				sender.sendMessage(Messages.TOPLIST_FOOTER.toString().replace("{0}", pageNo));
+			}
+		}
+	}
+
+	public String getHistory(String username, String timeHistory, String timeFormat) {
+		long playtime;
+		if(timeHistory.equals("")) {
+			playtime = getPlaytime(username);
+		} else {
+			playtime = getResetTime(username, timeHistory);
+		}
+		if(timeFormat.equals("")) {
+			return converter.fullTimeToStr(playtime);
+		}
+		return converter.formatPlaytime(playtime, timeFormat);
 	}
 
 	public void initializePlayerData() {
@@ -70,8 +165,9 @@ public class PlayerData {
 		}
 		for(String e: historySelectors) {
 			checkDate(e);
+			sortTimes(e);
 		}
-		sortTimes();
+		sortTimes("total");
 	}
 
 	public void writeFile() {
@@ -188,7 +284,7 @@ public class PlayerData {
 		return sec == null || !sec.contains(uuid.toString());
 	}
 
-	public void sortTimes() {
+	public void sortTimes(String selector) {
 		User user;
 		UUID uuid;
 		updateTime = System.currentTimeMillis();
@@ -203,18 +299,45 @@ public class PlayerData {
 			}
 			totalTime += user.playTimeTicks;
 		}
-		//sort toplist
-		topTimes.sort(new compTimes());
+		switch(selector) {
+			case "total":
+				topTimes.sort(new compTimes());
+				break;
+			case "day":
+				topDay.sort(new compTimes());
+				break;
+			case "month":
+				topMonth.sort(new compTimes());
+				break;
+			case "year":
+				topYear.sort(new compTimes());
+				break;
+		}
 	}
 
-	public List<User> getTopListPage(int page) {
+	public List<User> getTopListPage(int page, String selector) {
 		int high = page*10;
-		int size = getListSize();
+		int size = getListSize(selector);
+		List<User> list = null;
 		if(high>size) {
 			high = size;
 		}
 		int low = (page-1)*10;
-		return topTimes.subList(low, high);
+		switch(selector) {
+			case "total":
+				list = topTimes.subList(low, high);
+				break;
+			case "day":
+				list = topDay.subList(low, high);
+				break;
+			case "month":
+				list = topMonth.subList(low, high);
+				break;
+			case "year":
+				list = topYear.subList(low, high);
+				break;
+		}
+		return list;
 	}
 
 	public boolean isUserValid(String arg) {
@@ -224,7 +347,7 @@ public class PlayerData {
 	public long getPlaytime(String username) {
 		if(username.equalsIgnoreCase("total")) {
 			if(isTopListOld()) {
-				sortTimes();
+				sortTimes("total");
 			}
 			return totalTime;
 		}
@@ -252,6 +375,15 @@ public class PlayerData {
 		assert name != null;
 		name2uuid.put(name.toLowerCase(), uuid);
 		topTimes.add(user);
+		if(user.dayReset-user.playTimeTicks != 0) {
+			topDay.add(user);
+		}
+		if(user.monthReset-user.playTimeTicks != 0) {
+			topMonth.add(user);
+		}
+		if(user.yearReset-user.playTimeTicks != 0) {
+			topYear.add(user);
+		}
 	}
 
 	public boolean isTopListOld() {

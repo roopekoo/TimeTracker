@@ -1,8 +1,8 @@
 package me.roopekoo.timeTracker.commands;
 
-import me.roopekoo.timeTracker.Messages;
 import me.roopekoo.timeTracker.PlayerData;
 import me.roopekoo.timeTracker.TimeTracker;
+import me.roopekoo.timeTracker.utils.Messages;
 import me.roopekoo.timeTracker.utils.TimeConverter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,6 +38,7 @@ public class gettime implements CommandExecutor {
 			if(playerData.isUserValid(args[0])) {
 				//Check if timeformat is correct
 				if(converter.isTimeFormat(args[1])) {
+					//gettime player format
 					printPlaytime(sender, args[0], args[1]);
 					return true;
 				} else {
@@ -51,6 +52,7 @@ public class gettime implements CommandExecutor {
 		if(args.length == 1) {
 			//Check if 1st arg is "total"
 			if(args[0].equalsIgnoreCase("total")) {
+				//gettime player total
 				printPlaytime(sender, args[0], "");
 				return true;
 			}
@@ -80,7 +82,7 @@ public class gettime implements CommandExecutor {
 	}
 
 	private void printPlaytime(CommandSender sender, String username, String timeFormat) {
-		String playtime = converter.getPlaytime(username, timeFormat);
+		String playtime = playerData.getHistory(username, "", timeFormat);
 		if(username.equalsIgnoreCase("total")) {
 			sender.sendMessage(Messages.TITLE+Messages.GETTIME_TOTAL.toString().replace("{0}", playtime));
 		} else {

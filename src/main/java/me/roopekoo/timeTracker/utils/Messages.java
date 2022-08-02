@@ -1,4 +1,4 @@
-package me.roopekoo.timeTracker;
+package me.roopekoo.timeTracker.utils;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,6 +27,7 @@ public enum Messages {
 	GETTIME("gettime", "{0}{1} &ahas a playtime of &6{2}"),
 	GETTIME_SELF("gettime-self", "&2Your &aplaytime is &6{0}"),
 	GETTIME_TOTAL("gettime-total", "&aCombined total playtime is &6{0}"),
+	TPH_TITLE("tph-title", "&aPlaytime toplist history in this &6{0} &e-- &6Page &c{1}&6/&c{2}"),
 	PLAYER_REQUIRED("player-required", "&cPlayername required!"),
 	ONLINE("online", "&2"),
 	OFFLINE("offline", "&8"),

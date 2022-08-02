@@ -14,6 +14,10 @@ commands:
   playhistory:
     description: 'Show player playtime in certain time-range, e.g day/month/year playtime'
     usage: /<command> [playerName] [day/month/year] <timeFormat>
+  topplayhistory:
+    description: 'List players playtime in certain time-range, e.g day/month/year'
+    usage: /<command> [day/month/year] [page] <timeFormat>
+    aliases: [ tph ]
 permissions:
   timetracker.gettime:
     description: "Allows to see other players' playtime"
@@ -26,4 +30,7 @@ permissions:
     default: op
   timetracker.playhistory:
     description: "Allows to see the playtimehistory of a player"
+    default: true
+  timetracker.topplayhistory:
+    description: "Allows to see top playtime history list"
     default: true

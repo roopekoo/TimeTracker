@@ -1,8 +1,8 @@
 package me.roopekoo.timeTracker.commands;
 
-import me.roopekoo.timeTracker.Messages;
 import me.roopekoo.timeTracker.PlayerData;
 import me.roopekoo.timeTracker.TimeTracker;
+import me.roopekoo.timeTracker.utils.Messages;
 import me.roopekoo.timeTracker.utils.TimeConverter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -90,7 +90,7 @@ public class playHistory implements CommandExecutor {
 	}
 
 	private void printPlaytimeHistory(CommandSender sender, String timeHistory, String username, String timeFormat) {
-		String resettime = converter.getHistory(username, timeHistory, timeFormat);
+		String resettime = playerData.getHistory(username, timeHistory, timeFormat);
 		Messages timeHistoryMsg = Messages.fromString(timeHistory);
 		assert timeHistoryMsg != null;
 		//Fix name formatting
