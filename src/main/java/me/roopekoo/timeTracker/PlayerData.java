@@ -102,7 +102,7 @@ public class PlayerData {
 				sortTimes(selector);
 			}
 			pageNo = String.valueOf(page);
-			if(selector.equals("")) {
+			if(selector.equals("total")) {
 				sender.sendMessage(Messages.TITLE+
 				                   Messages.TOPLIST_TITLE.toString().replace("{0}", pageNo).replace("{1}", pageStr));
 			} else {
