@@ -30,18 +30,16 @@ public class PlayerData {
 	private static final ArrayList<User> topDay = new ArrayList<>();
 	private static final ArrayList<User> topMonth = new ArrayList<>();
 	private static final ArrayList<User> topYear = new ArrayList<>();
-	private static File HISTORY_FILE = new File(BASEDIR+PATH);
+	private static final File HISTORY_FILE = new File(BASEDIR+PATH);
 	//Store UUIDs in map where username is the key
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	private final TimeConverter converter = new TimeConverter();
-
+	private final YamlConfiguration HISTORY;
 	long updateTime = 0;
 	long totalTime = 0;
 	// 10-minute topList update delay
 	int UPDATEDELAY = 10*60*1000;
-
 	List<String> historySelectors = converter.getTimeHistoryArray();
-	private final YamlConfiguration HISTORY;
 
 	public PlayerData() {
 		File f = new File(BASEDIR);

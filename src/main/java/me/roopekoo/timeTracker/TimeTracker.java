@@ -13,9 +13,27 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 public final class TimeTracker extends JavaPlugin {
-	private static File MSG_FILE;
+	private static final String BASEDIR = "plugins/TimeTracker";
+	private static final String PATH = "/messages.yml";
+	private static final File MSG_FILE = new File(BASEDIR+PATH);
 	private static TimeTracker plugin = null;
+	private final YamlConfiguration MSG;
 	private final PlayerData playerData = new PlayerData();
+
+	public TimeTracker() {
+		File f = new File(BASEDIR);
+		if(!f.exists()) {
+			f.mkdir();
+		}
+		if(!f.exists()) {
+			try {
+				MSG_FILE.createNewFile();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		MSG = YamlConfiguration.loadConfiguration(MSG_FILE);
+	}
 
 	/**
 	 Get TimeTracker instance
@@ -42,22 +60,7 @@ public final class TimeTracker extends JavaPlugin {
 		TimeTracker.getPlugin().getPlayerData().initializePlayerData();
 	}
 
-	public File createFile(String filename) {
-		File file = new File(getDataFolder(), filename);
-		if(!file.exists()) {
-			file.mkdir();
-			try {
-				file.createNewFile();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return file;
-	}
-
 	private void loadMessages() {
-		MSG_FILE = createFile("messages.yml");
-		YamlConfiguration MSG = YamlConfiguration.loadConfiguration(MSG_FILE);
 		for(Messages item: Messages.values()) {
 			if(MSG.getString(item.getPath()) == null) {
 				MSG.set(item.getPath(), item.getDefault());
