@@ -17,7 +17,7 @@ public enum Messages {
 	INVALID_PAGE("invalid page", "&cThat page does not exist!"),
 	INVALID_PARAM("invalid-parameter", "&cInvalid parameter!"),
 	INVALID_TIME_FORMAT("invalid-time-format", "&cInvalid time format!"),
-	HISTORY_SELF("history-self", "&2Your &aplaytime in this &e{0} &ais &6{1}"),
+	HISTORY_SELF("history-self", "&2Your &aplaytime in this {0} &ais &6{1}"),
 	HISTORY("history", "{0}{1} &ahas a playtime of &6{2} &ain this {3}"),
 	FORCE_UPDATED("force-updated", "&aPlaytime toplist has been &cforce&6-updated&a!"),
 	LIST_UPDATE("list-update", "&aUpdating top list... &ePlease wait&a!"),
