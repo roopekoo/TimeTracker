@@ -118,7 +118,11 @@ public class PlayerData {
 			for(PlayerData.User user: topListPage) {
 				isOnline = Messages.OFFLINE;
 				username = user.name;
-				ticks = getPlaytime(username);
+				if(selector.equals("total")) {
+					ticks = getPlaytime(username);
+				} else {
+					ticks = getResetTime(username, selector);
+				}
 				if(timeFormat.equals("")) {
 					playtime = converter.fullTimeToStr(ticks);
 				} else {
@@ -457,15 +461,15 @@ public class PlayerData {
 		assert name != null;
 		name2uuid.put(name.toLowerCase(), uuid);
 		topTimes.add(user);
-		if(user.dayReset-user.playTimeTicks>0) {
+		if(user.playTimeTicks-user.dayReset>0) {
 			topDay.add(user);
 			user.isOnDayList = true;
 		}
-		if(user.monthReset-user.playTimeTicks>0) {
+		if(user.playTimeTicks-user.monthReset>0) {
 			topMonth.add(user);
 			user.isOnMonthList = true;
 		}
-		if(user.yearReset-user.playTimeTicks>0) {
+		if(user.playTimeTicks-user.yearReset>0) {
 			topYear.add(user);
 			user.isOnYearList = true;
 		}
