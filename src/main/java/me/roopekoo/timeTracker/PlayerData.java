@@ -261,7 +261,7 @@ public class PlayerData {
 			User user;
 
 			//update date on YML
-			HISTORY.set(selection, todayStart.toString());
+			HISTORY.set(selection, LocalDateTime.from(today).toString());
 
 			OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 			for(OfflinePlayer offlinePlayer: offlinePlayers) {
