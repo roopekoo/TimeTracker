@@ -19,9 +19,9 @@ public class onPlayerLogin implements Listener {
 		if(!p.hasPlayedBefore()) {
 			playerData.addNewPlayer(uuid, p.getName(), 0, 0, 0, 0);
 			playerData.sortTimes("total");
-		} else {
-			playerData.setOnline(uuid, true);
 		}
+		playerData.setOnline(uuid, true);
+		playerData.historyListCheck(uuid);
 	}
 
 	@EventHandler public void onLeave(PlayerQuitEvent e) {

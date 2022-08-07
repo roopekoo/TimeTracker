@@ -8,6 +8,7 @@ import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -196,12 +197,76 @@ public class PlayerData {
 		});
 	}
 
-	private void setTimer(long seconds, String selection) {
+	private void setTimer(long seconds, String selector) {
 		new BukkitRunnable() {
 			@Override public void run() {
-				updateHistory(selection);
+				updateHistory(selector);
+				clearHistoryList(selector);
+				//set every player isOnList to false
+				offlinePlayersLoop(selector);
+				//Insert back users to history array that are online
+				onlinePlayersLoop(selector);
 			}
 		}.runTaskLater(TimeTracker.getPlugin(), seconds*20L);
+	}
+
+	void clearHistoryList(String selector) {
+		switch(selector) {
+			case "day":
+				topDay.clear();
+				break;
+			case "month":
+				topMonth.clear();
+				break;
+			case "year":
+				topYear.clear();
+				break;
+		}
+	}
+
+	private void offlinePlayersLoop(String selector) {
+		for(Map.Entry<String, User> set: playerMap.entrySet()) {
+			forceOnlineMode(selector, set.getValue());
+		}
+	}
+
+	private void forceOnlineMode(String selector, User user) {
+		switch(selector) {
+			case "day":
+				user.isOnDayList = false;
+				break;
+			case "month":
+				user.isOnMonthList = false;
+				break;
+			case "year":
+				user.isOnYearList = false;
+				break;
+		}
+	}
+
+	private void insertHistory(UUID uuid, String selector) {
+		User user = playerMap.get(uuid.toString());
+		switch(selector) {
+			case "day":
+				topDay.add(user);
+				user.isOnDayList = true;
+				break;
+			case "month":
+				topMonth.add(user);
+				user.isOnMonthList = true;
+				break;
+			case "year":
+				topYear.add(user);
+				user.isOnYearList = true;
+				break;
+		}
+	}
+
+	void onlinePlayersLoop(String selector) {
+		for(Player player: Bukkit.getOnlinePlayers()) {
+			UUID uuid = player.getUniqueId();
+			insertHistory(uuid, selector);
+		}
 	}
 
 	/**
@@ -239,6 +304,7 @@ public class PlayerData {
 		LocalDateTime oldDate = LocalDateTime.parse(date);
 
 		LocalDateTime nextDate = todayStart;
+		//Check if YML reset date is old
 		switch(selection) {
 			case "day":
 				nextDate = today.plusDays(1).atStartOfDay();
@@ -447,6 +513,22 @@ public class PlayerData {
 			return ticks-resettime;
 		}
 		return user.playTimeTicks-resettime;
+	}
+
+	public void historyListCheck(UUID uuid) {
+		User user = playerMap.get(uuid.toString());
+		if(!user.isOnDayList) {
+			topDay.add(user);
+			user.isOnDayList = true;
+		}
+		if(!user.isOnMonthList) {
+			topMonth.add(user);
+			user.isOnMonthList = true;
+		}
+		if(!user.isOnYearList) {
+			topYear.add(user);
+			user.isOnYearList = true;
+		}
 	}
 
 	static class compTimes implements Comparator<User> {
