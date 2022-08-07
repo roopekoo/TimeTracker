@@ -176,7 +176,7 @@ public class PlayerData {
 				dayR = HISTORY.getInt("players."+uuid+".day");
 				monthR = HISTORY.getInt("players."+uuid+".month");
 				yearR = HISTORY.getInt("players."+uuid+".year");
-				addNewPlayer(uuid, name, playTime, false, dayR, monthR, yearR);
+				addNewPlayer(uuid, name, playTime, dayR, monthR, yearR);
 			}
 		}
 		for(String e: historySelectors) {
@@ -381,24 +381,27 @@ public class PlayerData {
 		playerMap.get(uuid.toString()).isOnline = b;
 	}
 
-	public void addNewPlayer(UUID uuid, String name, int playTime, boolean isOnline, int dayR, int monthR, int yearR) {
+	public void addNewPlayer(UUID uuid, String name, int playTime, int dayR, int monthR, int yearR) {
 		totalTime += playTime;
 
 		// Create new User
-		User user = new User(uuid, name, playTime, isOnline, dayR, monthR, yearR);
+		User user = new User(uuid, name, playTime, dayR, monthR, yearR);
 		//Put player to the playerMap
 		playerMap.put(uuid.toString(), user);
 		assert name != null;
 		name2uuid.put(name.toLowerCase(), uuid);
 		topTimes.add(user);
-		if(user.dayReset-user.playTimeTicks != 0) {
+		if(user.dayReset-user.playTimeTicks>0) {
 			topDay.add(user);
+			user.isOnDayList = true;
 		}
-		if(user.monthReset-user.playTimeTicks != 0) {
+		if(user.monthReset-user.playTimeTicks>0) {
 			topMonth.add(user);
+			user.isOnMonthList = true;
 		}
-		if(user.yearReset-user.playTimeTicks != 0) {
+		if(user.yearReset-user.playTimeTicks>0) {
 			topYear.add(user);
+			user.isOnYearList = true;
 		}
 	}
 
@@ -471,20 +474,22 @@ public class PlayerData {
 	}
 
 	public static class User {
-		public String name;
-		public boolean isOnline;
+		String name;
+		boolean isOnline = false;
+		boolean isOnDayList = false;
+		boolean isOnMonthList = false;
+		boolean isOnYearList = false;
 		UUID uuid;
 		int playTimeTicks;
 		int dayReset;
 		int monthReset;
 		int yearReset;
 
-		public User(UUID uuid, String name, int playTimeTicks, boolean isOnline, int dayReset, int monthReset,
-		            int yearReset) {
+
+		public User(UUID uuid, String name, int playTimeTicks, int dayReset, int monthReset, int yearReset) {
 			this.uuid = uuid;
 			this.name = name;
 			this.playTimeTicks = playTimeTicks;
-			this.isOnline = isOnline;
 			this.dayReset = dayReset;
 			this.monthReset = monthReset;
 			this.yearReset = yearReset;
