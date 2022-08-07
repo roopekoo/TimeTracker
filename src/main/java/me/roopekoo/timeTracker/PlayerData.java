@@ -320,13 +320,13 @@ public class PlayerData {
 				topTimes.sort(new compTimes());
 				break;
 			case "day":
-				topDay.sort(new compTimes());
+				topDay.sort(new compDay());
 				break;
 			case "month":
-				topMonth.sort(new compTimes());
+				topMonth.sort(new compMonth());
 				break;
 			case "year":
-				topYear.sort(new compTimes());
+				topYear.sort(new compYear());
 				break;
 		}
 	}
@@ -449,6 +449,24 @@ public class PlayerData {
 	static class compTimes implements Comparator<User> {
 		@Override public int compare(User o1, User o2) {
 			return Integer.compare(o2.playTimeTicks, o1.playTimeTicks);
+		}
+	}
+
+	static class compDay implements Comparator<User> {
+		@Override public int compare(User o1, User o2) {
+			return Integer.compare(o2.playTimeTicks-o2.dayReset, o1.playTimeTicks-o1.dayReset);
+		}
+	}
+
+	static class compMonth implements Comparator<User> {
+		@Override public int compare(User o1, User o2) {
+			return Integer.compare(o2.playTimeTicks-o2.monthReset, o1.playTimeTicks-o1.monthReset);
+		}
+	}
+
+	static class compYear implements Comparator<User> {
+		@Override public int compare(User o1, User o2) {
+			return Integer.compare(o2.playTimeTicks-o2.yearReset, o1.playTimeTicks-o1.yearReset);
 		}
 	}
 
