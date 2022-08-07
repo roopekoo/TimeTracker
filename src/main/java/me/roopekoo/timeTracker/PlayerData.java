@@ -80,6 +80,10 @@ public class PlayerData {
 		int pages = (int) Math.ceil((double) PlayerData.getListSize(selector)/10);
 		String pageStr = String.valueOf(pages);
 		int page;
+		if(pages == 0) {
+			sender.sendMessage(Messages.TITLE+Messages.EMPTY_LIST.toString().replace("{0}", selector));
+			return;
+		}
 		if(pageNo.equals("")) {
 			page = 1;
 		} else {

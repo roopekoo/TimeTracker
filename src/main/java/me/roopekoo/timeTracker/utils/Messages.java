@@ -29,6 +29,7 @@ public enum Messages {
 	GETTIME_TOTAL("gettime-total", "&aCombined total playtime is &6{0}"),
 	TPH_TITLE("tph-title", "&aPlaytime toplist history in this &6{0} &e-- &6Page &c{1}&6/&c{2}"),
 	PLAYER_REQUIRED("player-required", "&cPlayername required!"),
+	EMPTY_LIST("empty-list", "&cNo one has played in this {0}"),
 	ONLINE("online", "&2"),
 	OFFLINE("offline", "&8"),
 	DAY("day", "&eday"),
