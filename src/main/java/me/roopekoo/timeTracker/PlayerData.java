@@ -299,7 +299,6 @@ public class PlayerData {
 	}
 
 	private void updateHistory(String selection) {
-		LocalDate today = LocalDate.now();
 		LocalDateTime todayStart = LocalDate.now().atStartOfDay();
 		boolean updateYML = false;
 
@@ -308,22 +307,23 @@ public class PlayerData {
 		LocalDateTime oldDate = LocalDateTime.parse(date);
 
 		LocalDateTime nextDate = todayStart;
+		LocalDateTime now = LocalDateTime.now();
 		//Check if YML reset date is old
 		switch(selection) {
 			case "day":
-				nextDate = today.plusDays(1).atStartOfDay();
+				nextDate = todayStart.plusDays(1);
 				if(oldDate.getDayOfMonth() != todayStart.getDayOfMonth()) {
 					updateYML = true;
 				}
 				break;
 			case "month":
-				nextDate = today.with(firstDayOfNextMonth()).atStartOfDay();
+				nextDate = todayStart.with(firstDayOfNextMonth());
 				if(oldDate.getMonthValue() != todayStart.getMonthValue()) {
 					updateYML = true;
 				}
 				break;
 			case "year":
-				nextDate = today.with(firstDayOfNextYear()).atStartOfDay();
+				nextDate = todayStart.with(firstDayOfNextYear());
 				if(oldDate.getYear() != todayStart.getYear()) {
 					updateYML = true;
 				}
@@ -335,7 +335,7 @@ public class PlayerData {
 			User user;
 
 			//update date on YML
-			HISTORY.set(selection, LocalDateTime.from(today).toString());
+			HISTORY.set(selection, now.toString());
 
 			OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 			for(OfflinePlayer offlinePlayer: offlinePlayers) {
@@ -356,7 +356,6 @@ public class PlayerData {
 				HISTORY.set("players."+uuid+"."+selection, playTime);
 			}
 		}
-		LocalDateTime now = LocalDateTime.now();
 		long diff = Duration.between(now, nextDate).toSeconds();
 		setTimer(diff, selection);
 		writeFile();
