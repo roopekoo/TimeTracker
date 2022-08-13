@@ -23,38 +23,35 @@ public class TabCompletition implements TabCompleter {
 					list.add(p.getName());
 				}
 				return list;
-			}
-			if(args.length == 2) {
+			} else if(args.length == 2) {
 				return converter.getTimeFormatsArray();
 			}
 		}
 		if(command.getName().equalsIgnoreCase("toptime")) {
 			if(args.length == 1) {
 				return getNumberArray("total");
-			}
-			if(args.length == 2) {
+			} else if(args.length == 2) {
 				return converter.getTimeFormatsArray();
 			}
 		}
 		if(command.getName().equalsIgnoreCase("playhistory")) {
 			if(args.length == 1) {
 				List<String> list = converter.getTimeHistoryArray();
-				if(!converter.isTimeHistory(args[0])) {
-					for(Player p: Bukkit.getOnlinePlayers()) {
-						list.add(p.getName());
-					}
+				list.add("total");
+				for(Player p: Bukkit.getOnlinePlayers()) {
+					list.add(p.getName());
 				}
 				return list;
-			}
-			if(args.length == 2) {
+			} else if(args.length == 2) {
 				if(converter.isTimeHistory(args[0])) {
 					return converter.getTimeFormatsArray();
 				} else {
 					return converter.getTimeHistoryArray();
 				}
-			}
-			if(args.length == 3) {
-				return converter.getTimeFormatsArray();
+			} else if(args.length == 3) {
+				if(converter.isTimeHistory(args[1])) {
+					return converter.getTimeFormatsArray();
+				}
 			}
 		}
 		if(command.getName().equalsIgnoreCase("topplayhistory")) {

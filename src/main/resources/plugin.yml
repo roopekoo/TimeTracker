@@ -7,13 +7,13 @@ description: Displays playtime toplist
 commands:
   gettime:
     description: 'Show player playtime'
-    usage: /<command> [playerName] <timeFormat>
+    usage: /<command> [player/total] <timeFormat>
   toptime:
     description: 'List players based on playtime'
     usage: /<command> [page] <timeFormat>
   playhistory:
     description: 'Show player playtime in certain time-range, e.g day/month/year playtime'
-    usage: /<command> [playerName] [day/month/year] <timeFormat>
+    usage: /<command> [player/total] [day/month/year] <timeFormat>
   topplayhistory:
     description: 'List players playtime in certain time-range, e.g day/month/year'
     usage: /<command> [day/month/year] [page] <timeFormat>

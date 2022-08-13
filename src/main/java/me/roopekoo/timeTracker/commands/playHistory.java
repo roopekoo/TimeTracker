@@ -39,7 +39,7 @@ public class playHistory implements CommandExecutor {
 			case 2:
 				if(playerData.isUserValid(args[0])) {
 					if(converter.isTimeHistory(args[1])) {
-						//playhistory player [day/month/year]
+						//playhistory <player/total> [day/month/year]
 						printPlaytimeHistory(sender, args[1], args[0], "");
 						return true;
 					} else {
@@ -68,7 +68,7 @@ public class playHistory implements CommandExecutor {
 				if(playerData.isUserValid(args[0])) {
 					if(converter.isTimeHistory(args[1])) {
 						if(converter.isTimeFormat(args[2])) {
-							//playhistory <player> [day/month/year] [timeFormat]
+							//playhistory <player> <day/month/year> [timeFormat]
 							printPlaytimeHistory(sender, args[1], args[0], args[2]);
 							return true;
 						} else {
@@ -93,20 +93,26 @@ public class playHistory implements CommandExecutor {
 		String resettime = playerData.getHistory(username, timeHistory, timeFormat);
 		Messages timeHistoryMsg = Messages.fromString(timeHistory);
 		assert timeHistoryMsg != null;
-		//Fix name formatting
-		username = playerData.getNameFormat(username);
-		if(sender.getName().equalsIgnoreCase(username)) {
-			sender.sendMessage(Messages.TITLE+Messages.HISTORY_SELF.toString().replace("{0}",
-			                                                                           timeHistoryMsg.toString())
-			                                                       .replace("{1}", resettime));
-		} else {
-			Messages isOnline = Messages.OFFLINE;
-			if(playerData.isOnline(username)) {
-				isOnline = Messages.ONLINE;
-			}
+		if(username.equals("total")) {
 			sender.sendMessage(Messages.TITLE+
-			                   Messages.HISTORY.toString().replace("{0}", isOnline.toString()).replace("{1}", username)
-			                                   .replace("{2}", resettime).replace("{3}", timeHistoryMsg.toString()));
+			                   Messages.HISTORY_TOTAL.toString().replace("{0}", timeHistoryMsg.toString())
+			                                         .replace("{1}", resettime));
+		} else {
+			//Fix name formatting
+			username = playerData.getNameFormat(username);
+			if(sender.getName().equalsIgnoreCase(username)) {
+				sender.sendMessage(Messages.TITLE+
+				                   Messages.HISTORY_SELF.toString().replace("{0}", timeHistoryMsg.toString())
+				                                        .replace("{1}", resettime));
+			} else {
+				Messages isOnline = Messages.OFFLINE;
+				if(playerData.isOnline(username)) {
+					isOnline = Messages.ONLINE;
+				}
+				sender.sendMessage(Messages.TITLE+Messages.HISTORY.toString().replace("{0}", isOnline.toString())
+				                                                  .replace("{1}", username).replace("{2}", resettime)
+				                                                  .replace("{3}", timeHistoryMsg.toString()));
+			}
 		}
 	}
 }

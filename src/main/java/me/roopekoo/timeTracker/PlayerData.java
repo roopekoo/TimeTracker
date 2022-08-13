@@ -36,8 +36,15 @@ public class PlayerData {
 	private final HashMap<String, UUID> name2uuid = new HashMap<>();
 	private final TimeConverter converter = new TimeConverter();
 	private final YamlConfiguration HISTORY;
-	long updateTime = 0;
+	long updateTotal = 0;
+	long updateDay = 0;
+	long updateMonth = 0;
+	long updateYear = 0;
+
 	long totalTime = 0;
+	long totalDay = 0;
+	long totalMonth = 0;
+	long totalYear = 0;
 	// 10-minute topList update delay
 	int UPDATEDELAY = 10*60*1000;
 	List<String> historySelectors = converter.getTimeHistoryArray();
@@ -100,7 +107,7 @@ public class PlayerData {
 			long ticks;
 			int userIndex = (page-1)*10+1;
 			//Check if list needs refreshing
-			if(isTopListOld()) {
+			if(isTopListOld(selector)) {
 				sender.sendMessage(Messages.TITLE+Messages.LIST_UPDATE.toString());
 				sortTimes(selector);
 			}
@@ -370,32 +377,65 @@ public class PlayerData {
 	}
 
 	public void sortTimes(String selector) {
-		User user;
 		UUID uuid;
-		updateTime = System.currentTimeMillis();
-		totalTime = 0;
-		// Update array to most recent playerData
-		for(User topTime: topTimes) {
-			user = topTime;
-			uuid = user.uuid;
-			//Playtime is old
-			if(user.isOnline) {
-				updatePlaytime(uuid);
-			}
-			totalTime += user.playTimeTicks;
-		}
+		long time = System.currentTimeMillis();
+
 		switch(selector) {
 			case "total":
+				updateTotal = time;
+				totalTime = 0;
 				topTimes.sort(new compTimes());
+
+				for(User user: topTimes) {
+					uuid = user.uuid;
+					//Playtime is old
+					if(user.isOnline) {
+						updatePlaytime(uuid);
+					}
+					totalTime += user.playTimeTicks;
+				}
 				break;
 			case "day":
+				updateDay = time;
+				totalDay = 0;
 				topDay.sort(new compDay());
+
+				for(User user: topDay) {
+					uuid = user.uuid;
+					//Playtime is old
+					if(user.isOnline) {
+						updatePlaytime(uuid);
+					}
+					totalDay += user.playTimeTicks-user.dayReset;
+				}
 				break;
 			case "month":
+				updateMonth = time;
+				totalMonth = 0;
 				topMonth.sort(new compMonth());
+
+				for(User user: topMonth) {
+					uuid = user.uuid;
+					//Playtime is old
+					if(user.isOnline) {
+						updatePlaytime(uuid);
+					}
+					totalMonth += user.playTimeTicks-user.monthReset;
+				}
 				break;
 			case "year":
+				updateYear = time;
+				totalYear = 0;
 				topYear.sort(new compYear());
+
+				for(User user: topYear) {
+					uuid = user.uuid;
+					//Playtime is old
+					if(user.isOnline) {
+						updatePlaytime(uuid);
+					}
+					totalYear += user.playTimeTicks-user.yearReset;
+				}
 				break;
 		}
 	}
@@ -426,13 +466,16 @@ public class PlayerData {
 	}
 
 	public boolean isUserValid(String arg) {
+		if(arg.equals("total")) {
+			return true;
+		}
 		return name2uuid.containsKey(arg.toLowerCase());
 	}
 
 	public long getPlaytime(String username) {
 		if(username.equalsIgnoreCase("total")) {
-			if(isTopListOld()) {
-				sortTimes("total");
+			if(isTopListOld(username)) {
+				sortTimes(username);
 			}
 			return totalTime;
 		}
@@ -474,8 +517,23 @@ public class PlayerData {
 		}
 	}
 
-	public boolean isTopListOld() {
-		return System.currentTimeMillis()-updateTime>UPDATEDELAY;
+	public boolean isTopListOld(String selector) {
+		boolean isOld = false;
+		switch(selector) {
+			case "total":
+				isOld = System.currentTimeMillis()-updateTotal>UPDATEDELAY;
+				break;
+			case "day":
+				isOld = System.currentTimeMillis()-updateDay>UPDATEDELAY;
+				break;
+			case "month":
+				isOld = System.currentTimeMillis()-updateMonth>UPDATEDELAY;
+				break;
+			case "year":
+				isOld = System.currentTimeMillis()-updateYear>UPDATEDELAY;
+				break;
+		}
+		return isOld;
 	}
 
 	public boolean isOnline(String username) {
@@ -495,6 +553,26 @@ public class PlayerData {
 	}
 
 	public long getResetTime(String username, String timeHistory) {
+		if(username.equalsIgnoreCase("total")) {
+			if(isTopListOld(timeHistory)) {
+				sortTimes(timeHistory);
+			}
+			long total = 0;
+			//return correct total
+			switch(timeHistory) {
+				case "day":
+					total = totalDay;
+					break;
+				case "month":
+					total = totalMonth;
+					break;
+				case "year":
+					total = totalYear;
+					break;
+			}
+			return total;
+		}
+
 		UUID uuid = name2uuid.get(username.toLowerCase());
 		User user = playerMap.get(uuid.toString());
 		int resettime = 0;
