@@ -384,8 +384,6 @@ public class PlayerData {
 			case "total":
 				updateTotal = time;
 				totalTime = 0;
-				topTimes.sort(new compTimes());
-
 				for(User user: topTimes) {
 					uuid = user.uuid;
 					//Playtime is old
@@ -394,12 +392,11 @@ public class PlayerData {
 					}
 					totalTime += user.playTimeTicks;
 				}
+				topTimes.sort(new compTimes());
 				break;
 			case "day":
 				updateDay = time;
 				totalDay = 0;
-				topDay.sort(new compDay());
-
 				for(User user: topDay) {
 					uuid = user.uuid;
 					//Playtime is old
@@ -408,12 +405,11 @@ public class PlayerData {
 					}
 					totalDay += user.playTimeTicks-user.dayReset;
 				}
+				topDay.sort(new compDay());
 				break;
 			case "month":
 				updateMonth = time;
 				totalMonth = 0;
-				topMonth.sort(new compMonth());
-
 				for(User user: topMonth) {
 					uuid = user.uuid;
 					//Playtime is old
@@ -422,12 +418,11 @@ public class PlayerData {
 					}
 					totalMonth += user.playTimeTicks-user.monthReset;
 				}
+				topMonth.sort(new compMonth());
 				break;
 			case "year":
 				updateYear = time;
 				totalYear = 0;
-				topYear.sort(new compYear());
-
 				for(User user: topYear) {
 					uuid = user.uuid;
 					//Playtime is old
@@ -436,6 +431,7 @@ public class PlayerData {
 					}
 					totalYear += user.playTimeTicks-user.yearReset;
 				}
+				topYear.sort(new compYear());
 				break;
 		}
 	}
