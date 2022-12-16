@@ -4,12 +4,15 @@ A simple top-list plugin to easily show player's playtime. Order the players bas
 ## Features:
 - /toptime [timeFormat], shows the players ordered by playtime
 - /toptime {pageNo} [timeFormat], shows the pageNo page. For example /toptime 2 shows the third toplist page, players 11. to 20.
+
 ![](https://i.imgur.com/2y3Mq4l.png "Page 2 of the playtime toplist")
 - /toptime force, force updates and orders the playtime list
 - /gettime [timeFormat], shows player own playtime.
 - /gettime {playerName} [timeFormat], shows the playtime of selected player.
+
 ![](https://i.imgur.com/3MFqAPZ.png "Player specific playtime")
 - /gettime total [TimeFormat], shows the combined playtime on the server.
+
 ![](https://i.imgur.com/ag6CF0J.png "All players total playtime without and with format 'h'")
 
 Visualize the playtime in user selected format:
